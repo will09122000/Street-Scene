@@ -8,14 +8,14 @@ out vec4 out_color;
 
 uniform vec3 viewpos;
 
-//uniform vec3 lightpos;
+uniform vec3 lightpos;
 uniform vec3 color;
 uniform float ambient_intensity;
-//uniform float diffuse_intensity;
-//uniform float specular_intensity;
-//uniform float specular_power;
+uniform float diffuse_intensity;
+uniform float specular_intensity;
+uniform float specular_power;
 
-//uniform vec3 lightpos2;
+uniform vec3 lightpos2;
 
 uniform sampler2D s_texture;
 uniform samplerCube skybox;
@@ -34,16 +34,16 @@ const int numberOfLights = 2;
 lightSource lights[numberOfLights];
 
 lightSource light0 = lightSource(
-  vec3(20, 2, 20),
-  vec3(1, 0.8, 0),
+  vec3(20, 10, 20),
+  vec3(1, 1, 1),
   0.0,
   0.7,
   0.8,
   32
 );
 lightSource light1 = lightSource(
-  vec3(20, 2, -20),
-  vec3(1, 0.8, 0),
+  vec3(-20, 10, -20),
+  vec3(1, 1, 1),
   0.0,
   0.7,
   0.8,

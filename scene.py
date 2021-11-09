@@ -5,7 +5,7 @@ import moderngl
 from numpy import pi
 import pyrr
 
-from model import load_obj, create_skybox, _compile_programs
+from model import create_skybox, _compile_programs
 from light import BasicLight
 from camera import FirstPersonController
 from ui import Image, Text
@@ -33,8 +33,10 @@ class Scene:
         self.camera = FirstPersonController(WINDOW_WIDTH / WINDOW_HEIGHT)
         self.camera.noclip = True
 
-        self.light_source = BasicLight()
-        self.light_source.ambient_intensity = 0.1
+        self.lights = []
+        self.lights.append(BasicLight([20, 10, 20]))
+        self.lights.append(BasicLight([-20, 10, -20]))
+
 
         self.models = []
 
@@ -85,7 +87,13 @@ class Scene:
         self.ctx.enable(moderngl.DEPTH_TEST)
 
         for model in self.models:
-            model.update(self.camera, self.light_source)
+            if model.__class__.__name__ == 'UnlitModel':
+                model.update(self.camera)
+            else:
+                model.update(self.camera, self.lights)
+
+            if model.__class__.__name__ == 'DynamicModel':
+                model.translate()
             model.render()
 
         pygame.display.flip()
