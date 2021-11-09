@@ -3,12 +3,26 @@ import random
 import pygame
 import moderngl
 from numpy import pi
+import numpy
 import pyrr
+import PIL.Image
 
 from model import create_skybox, _compile_programs
-from light import BasicLight
+from light import LampPostLight, Light
 from camera import FirstPersonController
 from ui import Image, Text
+
+def createTextureArray(imageList, width, height):
+
+    dataList = []
+    for filename in imageList:
+        image = PIL.Image.open(filename)
+        if width != image.size[0] or height != image.size[1]:
+            raise ValueError(f"image size mismatch: {image.size[0]}x{image.size[1]}")
+        
+        dataList.append(list(image.getdata()))
+
+    return numpy.array(dataList, numpy.uint8)
 
 class Scene:
     def __init__(self, width=1280, height=720):
@@ -33,31 +47,31 @@ class Scene:
         self.camera = FirstPersonController(WINDOW_WIDTH / WINDOW_HEIGHT)
         self.camera.noclip = True
 
-        self.lights = []
-        self.lights.append(BasicLight([20, 10, 20]))
-        self.lights.append(BasicLight([-20, 10, -20]))
-
-
         self.models = []
+        self.lights = []
 
-        self.top = pygame.image.load('assets/skybox/generic_top.png').convert((255, 65280, 16711680, 0))
-        self.bottom = pygame.image.load('assets/skybox/generic_bottom.png').convert((255, 65280, 16711680, 0))
-        self.left = pygame.image.load('assets/skybox/generic_left.png').convert((255, 65280, 16711680, 0))
-        self.front = pygame.image.load('assets/skybox/generic_front.png').convert((255, 65280, 16711680, 0))
-        self.right = pygame.image.load('assets/skybox/generic_right.png').convert((255, 65280, 16711680, 0))
-        self.back = pygame.image.load('assets/skybox/generic_back.png').convert((255, 65280, 16711680, 0))
+        texture_array = createTextureArray(['assets/skybox/top.png',
+                                            'assets/skybox/bottom.png',
+                                            'assets/skybox/left.png',
+                                            'assets/skybox/front.png',
+                                            'assets/skybox/right.png',
+                                            'assets/skybox/back.png'],
+                                            1024, 1024)
 
-        self.data = self.right.get_view('1').raw + self.left.get_view('1').raw + self.top.get_view('1').raw + self.bottom.get_view('1').raw + self.front.get_view('1').raw + self.back.get_view('1').raw
-
-        self.cubemap = self.ctx.texture_cube((900, 900), 3,self. data)
+        self.cubemap = self.ctx.texture_cube((1024, 1024), 4, texture_array)
         _compile_programs(self.ctx)
         self.skybox = create_skybox(self.ctx, self.cubemap)
 
     def add_models(self, models):
         self.models = models
 
+    def add_lighting(self):
+        for model in self.models:
+            if model.__class__.__name__ == 'UnlitModel':
+                self.lights.append(LampPostLight(model.position))
+
     def draw(self):
-        self.clock.tick(120)
+        self.clock.tick(60)
 
         events = pygame.event.get()
         for event in events:

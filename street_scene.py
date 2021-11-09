@@ -10,5 +10,7 @@ if __name__ == '__main__':
     # load here the 3d meshes
     scene.add_models(load_models(scene.ctx))
 
+    scene.add_lighting()
+
     # starts drawing the scene
     scene.run()

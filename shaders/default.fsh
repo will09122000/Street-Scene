@@ -8,69 +8,36 @@ out vec4 out_color;
 
 uniform vec3 viewpos;
 
-//uniform vec3 lightpos;
-uniform vec3 color;
-uniform float ambient_intensity;
-//uniform float diffuse_intensity;
-//uniform float specular_intensity;
-//uniform float specular_power;
-
-//uniform vec3 lightpos2;
+uniform int num_lights;
+uniform vec3 lightpos[24];
+uniform vec3 color[24];
+uniform float ambient_intensity[24];
+uniform float diffuse_intensity[24];
+uniform float specular_intensity[24];
+uniform float specular_power[24];
 
 uniform sampler2D s_texture;
 uniform samplerCube skybox;
 uniform sampler2D shadowMap;
 
-struct lightSource
-{
-  vec3 lightpos;
-  vec3 color;
-  float ambient_intensity;
-  float diffuse_intensity;
-  float specular_intensity;
-  float specular_power;
-};
-const int numberOfLights = 2;
-lightSource lights[numberOfLights];
-
-lightSource light0 = lightSource(
-  vec3(20, 2, 20),
-  vec3(1, 0.8, 0),
-  0.0,
-  0.7,
-  0.8,
-  32
-);
-lightSource light1 = lightSource(
-  vec3(20, 2, -20),
-  vec3(1, 0.8, 0),
-  0.0,
-  0.7,
-  0.8,
-  32
-);
-
 void main() {
 
-    lights[0] = light0;
-    lights[1] = light1;
+    // Ambient
+    vec3 totalLighting = ambient_intensity[0] * color[0];
 
-    // Ambient CHANGE COLOR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    vec3 totalLighting = ambient_intensity * color;
-
-    for (int i = 0; i < numberOfLights; i++)
+    for (int i = 0; i < num_lights; i++)
     {
         // Diffuse
         vec3 norm = normalize(v_normal);
-        vec3 lightDir = normalize(lights[i].lightpos - FragPos);
+        vec3 lightDir = normalize(lightpos[i] - FragPos);
         float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * lights[i].color * lights[i].diffuse_intensity;
+        vec3 diffuse = diff * color[i] * diffuse_intensity[i];
         
         // Specular
         vec3 viewDir = normalize(viewpos - FragPos);
         vec3 reflectDir = reflect(-lightDir, norm);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), lights[i].specular_power);
-        vec3 specular = lights[i].specular_intensity * spec * lights[i].color;
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), specular_power[i]);
+        vec3 specular = specular_intensity[i] * spec * color[i];
 
         // Reflection
         vec3 I = normalize(FragPos - viewpos);

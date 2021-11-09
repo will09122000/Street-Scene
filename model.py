@@ -9,7 +9,7 @@ import numpy as np
 
 from objparser import parse
 from camera import Camera
-from light import BasicLight
+from light import Light
 
 map_edge = 24
 
@@ -165,35 +165,32 @@ class BaseModel:
         self.program['model'].value = tuple(self.pos_matrix.flatten())
         self.program['angle'].value = tuple(self.rotation.tolist())
         self.program['scale'].value = tuple(self.scale.tolist())
-
         self.program['viewpos'].value = tuple(camera.final_position.tolist())
-        #self.program['lightpos'].value = tuple(lights[0].position.tolist())
-        #self.program['lightpos2'].value = tuple(lights[1].position.tolist())
 
+        self.program['num_lights'].value         = len(lights)
+        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
+        self.program['color'].value              = [light.color for light in lights]
+        self.program['ambient_intensity'].value  = [light.ambient_intensity for light in lights]
+        self.program['diffuse_intensity'].value  = [light.diffuse_intensity for light in lights]
+        self.program['specular_intensity'].value = [light.specular_intensity for light in lights]
+        self.program['specular_power'].value     = [light.specular_power for light in lights]
 
-        self.program['color'].value = lights[0].color
-        self.program['ambient_intensity'].value = lights[0].ambient_intensity
-        #self.program['diffuse_intensity'].value = lights[0].diffuse_intensity
-        #self.program['specular_intensity'].value = lights[0].specular_intensity
-        #self.program['specular_power'].value = lights[0].specular_power
-
-    def update_shadow(self, camera: Camera, camera2: Camera, lights):
+    def update_shadow(self, camera: Camera, lights):
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['lightprojection'].value = tuple(camera2.projection.flatten())
-        self.program['lightview'].value = tuple(camera2.get_view_matrix().flatten())
+        self.program['lightprojection'].value = tuple(camera.projection.flatten())
+        self.program['lightview'].value = tuple(camera.get_view_matrix().flatten())
         self.program['angle'].value = tuple(self.rotation.tolist())
         self.program['scale'].value = tuple(self.scale.tolist())
-
         self.program['viewpos'].value = tuple(camera.final_position.tolist())
-        self.program['lightpos'].value = tuple(lights[0].position.tolist())
 
-        self.program['color'].value = lights[0].color
-        self.program['ambient_intensity'].value = lights[0].ambient_intensity
-        self.program['diffuse_intensity'].value = lights[0].diffuse_intensity
-        self.program['specular_intensity'].value = lights[0].specular_intensity
-        self.program['specular_power'].value = lights[0].specular_power
+        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
+        self.program['color'].value              = [light.color for light in lights]
+        self.program['ambient_intensity'].value  = [light.ambient_intensity for light in lights]
+        self.program['diffuse_intensity'].value  = [light.diffuse_intensity for light in lights]
+        self.program['specular_intensity'].value = [light.specular_intensity for light in lights]
+        self.program['specular_power'].value     = [light.specular_power for light in lights]
 
     def update_shadowmap(self, camera: Camera):
         self.shadowmap_program['projection'].value = tuple(camera.projection.flatten())
@@ -272,6 +269,8 @@ class UnlitModel(BaseModel):
             tex_coords: list[tuple[float, float]],
             norm_coords: list[tuple[float, float, float]],
             flip_texture: bool,
+            rotation: float = 0.0,
+            scale: float = 1.0,
             from_filepath: bool = True,
             build_mipmaps: bool = True):
 
@@ -284,6 +283,8 @@ class UnlitModel(BaseModel):
             tex_coords,
             norm_coords,
             flip_texture,
+            rotation,
+            scale,
             from_filepath,
             build_mipmaps)
 
@@ -414,7 +415,9 @@ def load_obj(
             objfile.vertices,
             objfile.uv_coords,
             objfile.vertex_normals,
-            flip_texture)
+            flip_texture,
+            rotation,
+            scale,)
     elif translation != 0.0:
         return DynamicModel(
             ctx,

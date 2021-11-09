@@ -11,7 +11,7 @@ def load_models(ctx):
         model = loader(ctx)
         models.extend(model)
 
-    #models.append(load_obj(ctx, 'assets/models/sphere.obj', 'assets/textures/white.png', (20.0, 1.0, 20.0), unlit=True))
+    #models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (5, 5, 5), unlit=True))
 
     return models
 
@@ -73,23 +73,26 @@ def load_lamp_posts(ctx):
     x_spacer = 5
     y_spacer = 8
 
-    repeat = False
     for i in range(0, 2):
         for j in range(-24, 32, y_spacer):
             # Prevent lamp posts being placed on the center of the map where the road is.
             if j != 0:
                 left = True
-                for k in range(0, 2):
-                    if repeat:
+                for k in range(-1, 2, 2):
+                    if i > 0:
                         position = [-x_spacer if left else x_spacer, 0, j]
                         angle1, angle2 = 1.6, -1.6
                     else:
                         position = [j, 0, -x_spacer if left else x_spacer]
                         angle1, angle2 = 3.2, 0
 
-                    lamp_post = load_obj(ctx, 'assets/models/lampPost.obj', 'assets/textures/lampPost.png', (position), angle1 if left else angle2)
-                    lamp_posts.append(lamp_post)
+                    lamp_post = load_obj(ctx, 'assets/models/lampPost.obj', 'assets/textures/lampPost.png', position, angle1 if left else angle2)
+                    if i > 0:
+                        light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2]-((0.009 if left else -0.009)*k))
+                    else:
+                        light_position = (position[0]+((0.018 if left else 0.0008)*k), position[1]+2.16, position[2]+(-0.29*k))
+                    lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, unlit=True)
+                    lamp_posts.extend([lamp_post, lamp_post_light])
                     left = not left
-        repeat = True
 
     return lamp_posts
