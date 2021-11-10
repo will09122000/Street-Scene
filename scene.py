@@ -7,12 +7,12 @@ import numpy
 import pyrr
 import PIL.Image
 
-from model import create_skybox, _compile_programs
+from model import Skybox, _compile_programs
 from light import LampPostLight, Light
 from camera import FirstPersonController
 from ui import Image, Text
 
-def createTextureArray(imageList, width, height):
+def create_skybox(ctx, imageList, width, height):
 
     dataList = []
     for filename in imageList:
@@ -22,19 +22,21 @@ def createTextureArray(imageList, width, height):
         
         dataList.append(list(image.getdata()))
 
-    return numpy.array(dataList, numpy.uint8)
+    image_data = numpy.array(dataList, numpy.uint8)
+
+    return Skybox(ctx, ctx.texture_cube((width, height), 4, image_data))
+
 
 class Scene:
-    def __init__(self, width=1280, height=720):
-
-        WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-        self.window_size = (width, height)
+    def __init__(self, width, height):
 
         pygame.init()
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 8)
-        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.OPENGL | pygame.DOUBLEBUF)
+
+        self.window = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
         self.clock = pygame.time.Clock()
+
         # These two lines creates a 'virtual mouse' so you can move it freely
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
@@ -44,30 +46,30 @@ class Scene:
         self.ctx.enable(moderngl.DEPTH_TEST | moderngl.CULL_FACE | moderngl.BLEND)
         self.ctx.multisample = True
 
-        self.camera = FirstPersonController(WINDOW_WIDTH / WINDOW_HEIGHT)
+        self.camera = FirstPersonController(width / height)
         self.camera.noclip = True
 
         self.models = []
         self.lights = []
 
-        texture_array = createTextureArray(['assets/skybox/top.png',
-                                            'assets/skybox/bottom.png',
-                                            'assets/skybox/left.png',
-                                            'assets/skybox/front.png',
-                                            'assets/skybox/right.png',
-                                            'assets/skybox/back.png'],
+        _compile_programs(self.ctx)
+
+        self.skybox = create_skybox(self.ctx,
+                                           ['assets/skybox/night/right.png',
+                                            'assets/skybox/night/left.png',
+                                            'assets/skybox/night/top.png',
+                                            'assets/skybox/night/bottom.png',
+                                            'assets/skybox/night/back.png',
+                                            'assets/skybox/night/front.png'],
                                             1024, 1024)
 
-        self.cubemap = self.ctx.texture_cube((1024, 1024), 4, texture_array)
-        _compile_programs(self.ctx)
-        self.skybox = create_skybox(self.ctx, self.cubemap)
 
     def add_models(self, models):
         self.models = models
 
     def add_lighting(self):
         for model in self.models:
-            if model.__class__.__name__ == 'UnlitModel':
+            if model.__class__.__name__ == 'LightModel':
                 self.lights.append(LampPostLight(model.position))
 
     def draw(self):
@@ -101,7 +103,7 @@ class Scene:
         self.ctx.enable(moderngl.DEPTH_TEST)
 
         for model in self.models:
-            if model.__class__.__name__ == 'UnlitModel':
+            if model.__class__.__name__ == 'LightModel':
                 model.update(self.camera)
             else:
                 model.update(self.camera, self.lights)

@@ -11,10 +11,11 @@ uniform vec3 viewpos;
 uniform int num_lights;
 uniform vec3 lightpos[24];
 uniform vec3 color[24];
-uniform float ambient_intensity[24];
-uniform float diffuse_intensity[24];
-uniform float specular_intensity[24];
+uniform float ambient[24];
+uniform float diffuse[24];
+uniform float specular[24];
 uniform float specular_power[24];
+uniform vec3 attenuation[24];
 
 uniform sampler2D s_texture;
 uniform samplerCube skybox;
@@ -23,21 +24,31 @@ uniform sampler2D shadowMap;
 void main() {
 
     // Ambient
-    vec3 totalLighting = ambient_intensity[0] * color[0];
+    vec3 totalLighting = ambient[0] * color[0];
 
     for (int i = 0; i < num_lights; i++)
     {
+
+        float distance = length(lightpos[i] - FragPos);
+        float attenuation = 1.0 / (attenuation[i].x +
+                                   attenuation[i].y * distance +
+                                   attenuation[i].z * distance * distance);
+        
+        //float attenuation = 1.0 / (1 +
+                            //0.09 * distance +
+                            //0.032 * distance * distance); 
+
         // Diffuse
         vec3 norm = normalize(v_normal);
         vec3 lightDir = normalize(lightpos[i] - FragPos);
         float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * color[i] * diffuse_intensity[i];
+        vec3 diffuse = diff * color[i] * diffuse[i] * attenuation;
         
         // Specular
         vec3 viewDir = normalize(viewpos - FragPos);
         vec3 reflectDir = reflect(-lightDir, norm);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), specular_power[i]);
-        vec3 specular = specular_intensity[i] * spec * color[i];
+        vec3 specular = specular[i] * spec * color[i] * attenuation;
 
         // Reflection
         vec3 I = normalize(FragPos - viewpos);

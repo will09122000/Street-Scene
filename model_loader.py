@@ -1,4 +1,4 @@
-from model import load_obj, create_skybox
+from model import load_obj
 from random import choices
 
 map_edge = 24
@@ -10,8 +10,6 @@ def load_models(ctx):
     for i, loader in enumerate(model_list):
         model = loader(ctx)
         models.extend(model)
-
-    #models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (5, 5, 5), unlit=True))
 
     return models
 
@@ -91,7 +89,7 @@ def load_lamp_posts(ctx):
                         light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2]-((0.009 if left else -0.009)*k))
                     else:
                         light_position = (position[0]+((0.018 if left else 0.0008)*k), position[1]+2.16, position[2]+(-0.29*k))
-                    lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, unlit=True)
+                    lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, light=True)
                     lamp_posts.extend([lamp_post, lamp_post_light])
                     left = not left
 

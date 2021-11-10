@@ -31,7 +31,7 @@ camera = FirstPersonController(WINDOW_WIDTH / WINDOW_HEIGHT)
 camera.noclip = True
 
 light_source = BasicLight()
-light_source.ambient_intensity = 0.6
+light_source.ambient = 0.6
 
 
 obj = load_obj(ctx, 'assets/models/obamium.obj', 'assets/textures/obamium.png', (-4, -3.5, -5), flip_texture=True)

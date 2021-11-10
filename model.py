@@ -20,44 +20,24 @@ def _compile_programs(ctx: moderngl.Context, force: bool = True):
 
     'force' keyword recompiles all shaders
     '''
+    print('Compiling Shaders')
+
     if len(PROGRAMS) == 0 or force:
         PROGRAMS.clear()
-        PROGRAMS['default'] = ctx.program(
-            vertex_shader   = open('shaders/default.vsh').read(),
-            fragment_shader = open('shaders/default.fsh').read()
+        PROGRAMS['BaseModel'] = ctx.program(
+            vertex_shader   = open('shaders/BaseModelVertex.glsl').read(),
+            fragment_shader = open('shaders/BaseModelFragment.glsl').read()
         )
 
-        PROGRAMS['unlit'] = ctx.program(
-            vertex_shader   = open('shaders/unlit.vsh').read(),
-            fragment_shader = open('shaders/unlit.fsh').read()
+        PROGRAMS['LightModel'] = ctx.program(
+            vertex_shader   = open('shaders/LightModelVertex.glsl').read(),
+            fragment_shader = open('shaders/LightModelFragment.glsl').read()
         )
 
-        PROGRAMS['static'] = ctx.program(
-            vertex_shader   = open('shaders/static.vsh').read(),
-            fragment_shader = open('shaders/static.fsh').read()
+        PROGRAMS['Skybox'] = ctx.program(
+            vertex_shader   = open('shaders/SkyboxVertex.glsl').read(),
+            fragment_shader = open('shaders/SkyboxFragment.glsl').read()
         )
-
-        PROGRAMS['skybox'] = ctx.program(
-            vertex_shader   = open('shaders/skybox.vsh').read(),
-            fragment_shader = open('shaders/skybox.fsh').read()
-        )
-
-        PROGRAMS['shadow'] = ctx.program(
-            vertex_shader   = open('shaders/shadow.vsh').read(),
-            fragment_shader = open('shaders/shadow.fsh').read()
-        )
-
-        PROGRAMS['shadowmap'] = ctx.program(
-            vertex_shader   = open('shaders/shadowmap.vsh').read(),
-            fragment_shader = open('shaders/shadowmap.fsh').read()
-        )
-
-        PROGRAMS['debug'] = ctx.program(
-            vertex_shader   = open('shaders/debug.vsh').read(),
-            fragment_shader = open('shaders/debug.fsh').read()
-        )
-
-
 class BaseModel:
     '''
     Base model class
@@ -77,9 +57,7 @@ class BaseModel:
             build_mipmaps: bool = True):
 
         self.ctx = ctx
-        self.program = PROGRAMS['default']
-        self.shadowmap_program = PROGRAMS['shadowmap']
-        self.debug_program = PROGRAMS['debug']
+        self.program = PROGRAMS[__class__.__name__]
 
         self.position = position
         self.rotation = pyrr.Vector3([0.0, rotation, 0.0])
@@ -132,7 +110,7 @@ class BaseModel:
         uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
         nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
-        if self.program == PROGRAMS['unlit']:
+        if self.program == PROGRAMS['LightModel']:
             self.vao = self.ctx.vertex_array(
                 self.program, [
                     (pos, '3f', 'a_position'),
@@ -146,18 +124,6 @@ class BaseModel:
                     (nor, '3f', 'a_normal')
                 ])
 
-        self.shadow_vao = self.ctx.vertex_array(
-            self.shadowmap_program, [
-                (pos, '3f', 'a_position')
-            ])
-
-        self.debug_vao = self.ctx.vertex_array(
-            self.debug_program, [
-                (pos, '3f', 'a_position'),
-                (uv,  '2f', 'a_texture'),
-                (pos, '3f', 'a_position')
-            ])
-
     def update(self, camera: Camera, lights):
 
         self.program['projection'].value = tuple(camera.projection.flatten())
@@ -170,49 +136,17 @@ class BaseModel:
         self.program['num_lights'].value         = len(lights)
         self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
         self.program['color'].value              = [light.color for light in lights]
-        self.program['ambient_intensity'].value  = [light.ambient_intensity for light in lights]
-        self.program['diffuse_intensity'].value  = [light.diffuse_intensity for light in lights]
-        self.program['specular_intensity'].value = [light.specular_intensity for light in lights]
+        self.program['ambient'].value  = [light.ambient for light in lights]
+        self.program['diffuse'].value  = [light.diffuse for light in lights]
+        self.program['specular'].value = [light.specular for light in lights]
         self.program['specular_power'].value     = [light.specular_power for light in lights]
-
-    def update_shadow(self, camera: Camera, lights):
-        self.program['projection'].value = tuple(camera.projection.flatten())
-        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
-        self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['lightprojection'].value = tuple(camera.projection.flatten())
-        self.program['lightview'].value = tuple(camera.get_view_matrix().flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist())
-        self.program['scale'].value = tuple(self.scale.tolist())
-        self.program['viewpos'].value = tuple(camera.final_position.tolist())
-
-        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
-        self.program['color'].value              = [light.color for light in lights]
-        self.program['ambient_intensity'].value  = [light.ambient_intensity for light in lights]
-        self.program['diffuse_intensity'].value  = [light.diffuse_intensity for light in lights]
-        self.program['specular_intensity'].value = [light.specular_intensity for light in lights]
-        self.program['specular_power'].value     = [light.specular_power for light in lights]
-
-    def update_shadowmap(self, camera: Camera):
-        self.shadowmap_program['projection'].value = tuple(camera.projection.flatten())
-        self.shadowmap_program['view'].value = tuple(camera.get_view_matrix().flatten())
-        self.shadowmap_program['model'].value = tuple(self.pos_matrix.flatten())
-
-    def update_debug(self, camera: Camera):
-        self.debug_program['projection'].value = tuple(camera.projection.flatten())
-        self.debug_program['view'].value = tuple(camera.get_view_matrix().flatten())
-        self.debug_program['model'].value = tuple(self.pos_matrix.flatten())
+        self.program['attenuation'].value = [light.attenuation for light in lights]
 
     def render(self, skybox=None):
         self.texture.use(location=0)
         if skybox: skybox.texture.use(location=1)
 
         self.vao.render()
-
-    def render_shadow(self):
-        self.shadow_vao.render()
-
-    def render_debug(self):
-        self.debug_vao.render()
 
 class DynamicModel(BaseModel):
     def __init__(self,
@@ -256,7 +190,7 @@ class DynamicModel(BaseModel):
             translation_matrix = pyrr.matrix44.create_from_translation([self.translation * -self.direction, 0, 0])
             self.pos_matrix = pyrr.matrix44.multiply(translation_matrix, self.pos_matrix)
 
-class UnlitModel(BaseModel):
+class LightModel(BaseModel):
     '''
     Unlit model doesn't get effected by any light source
     '''
@@ -288,7 +222,7 @@ class UnlitModel(BaseModel):
             from_filepath,
             build_mipmaps)
 
-        self.program = PROGRAMS['unlit']
+        self.program = PROGRAMS[__class__.__name__]
         self.create_vao()
 
     def update(self, camera: Camera):
@@ -346,7 +280,7 @@ class Skybox:
 
         objfile = parse('assets/models/cube.obj')
 
-        self.program = PROGRAMS['skybox']
+        self.program = PROGRAMS[__class__.__name__]
 
         self.rotation = pyrr.Vector3([0.0, 0.0, 0.0])
         self.scale = pyrr.Vector3([1.0, 1.0, 1.0])
@@ -402,12 +336,12 @@ def load_obj(
         direction: int = 1,
         texture_format: str = 'RGB',
         flip_texture: bool = False,
-        unlit: bool = False) -> Union[BaseModel, UnlitModel]:
+        light: bool = False) -> Union[BaseModel, LightModel]:
 
     objfile = parse(obj_filepath)
     
-    if unlit:
-        return UnlitModel(
+    if light:
+        return LightModel(
             ctx,
             position,
             texture_filepath,
@@ -444,7 +378,3 @@ def load_obj(
             flip_texture,
             rotation,
             scale)
-
-
-def create_skybox(ctx, texture):
-    return Skybox(ctx, texture)
