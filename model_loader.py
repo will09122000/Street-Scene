@@ -1,5 +1,6 @@
 from model import load_obj
 from random import choices
+from math import radians
 
 map_edge = 24
 
@@ -10,6 +11,8 @@ def load_models(ctx):
     for i, loader in enumerate(model_list):
         model = loader(ctx)
         models.extend(model)
+
+    models.append(load_obj(ctx, 'assets/models/house.obj', 'assets/textures/wood.png', (11, 0.001, 11), radians(180), 0.01))
 
     return models
 
@@ -30,15 +33,15 @@ def load_cars(ctx):
     # Moving cars
     cars.append(load_obj(ctx, 'assets/models/car' + str(colour[0]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge, 0, -1.1), 0, 0.6, 0.08, 1))
     cars.append(load_obj(ctx, 'assets/models/car' + str(colour[1]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge/4, 0, -1.1), 0, 0.6, 0.08, 1))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge, 0, 1.1), 3.2, 0.6, 0.09, -1))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge/4, 0, 1.1), 3.2, 0.6, 0.09, -1))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge, 0, 1.1), radians(180), 0.6, 0.09, -1))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge/4, 0, 1.1), radians(180), 0.6, 0.09, -1))
 
     # Stationary cars
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[4]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (1.1, 0, 8), 1.6, 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[5]) +'.obj', 'assets/textures/car' + str(colour[5]) +'.png', (1.1, 0, 12), 1.6, 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[6]) +'.obj', 'assets/textures/car' + str(colour[6]) +'.png', (1.1, 0, 16), 1.6, 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[7]) +'.obj', 'assets/textures/car' + str(colour[7]) +'.png', (-1.1, 0, -8), -1.6, 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[8]) +'.obj', 'assets/textures/car' + str(colour[8]) +'.png', (-1.1, 0, -12), -1.6, 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[4]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (1.1, 0, 8), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[5]) +'.obj', 'assets/textures/car' + str(colour[5]) +'.png', (1.1, 0, 12), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[6]) +'.obj', 'assets/textures/car' + str(colour[6]) +'.png', (1.1, 0, 16), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[7]) +'.obj', 'assets/textures/car' + str(colour[7]) +'.png', (-1.1, 0, -8), radians(-90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[8]) +'.obj', 'assets/textures/car' + str(colour[8]) +'.png', (-1.1, 0, -12), radians(-90), 0.6))
 
     return cars
 
@@ -79,10 +82,10 @@ def load_lamp_posts(ctx):
                 for k in range(-1, 2, 2):
                     if i > 0:
                         position = [-x_spacer if left else x_spacer, 0, j]
-                        angle1, angle2 = 1.6, -1.6
+                        angle1, angle2 = radians(90), radians(-90)
                     else:
                         position = [j, 0, -x_spacer if left else x_spacer]
-                        angle1, angle2 = 3.2, 0
+                        angle1, angle2 = radians(190), 0
 
                     lamp_post = load_obj(ctx, 'assets/models/lampPost.obj', 'assets/textures/lampPost.png', position, angle1 if left else angle2)
                     if i > 0:
