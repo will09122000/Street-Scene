@@ -59,11 +59,10 @@ void main() {
     //vec3 R = reflect(I, normalize(v_normal));
     //vec4 test = vec4(texture(skybox, R).rgb, 1.0);
 
-    //out_color = vec4(totalLighting, 1.0) * test;
+    out_color = vec4(totalLighting, 1.0);
 
-    #extension GL_NV_shadow_samplers_cube : enable
-    vec4 texColor = textureCube(skybox, R);
-    out_color = texColor;
+    //#extension GL_NV_shadow_samplers_cube : enable
+    //vec4 texColor = textureCube(skybox, R);
+    //out_color = texColor;
 
-    //out_color = vec4(vec3(depth), 1.0);
 }
