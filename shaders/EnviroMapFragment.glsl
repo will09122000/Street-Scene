@@ -4,6 +4,8 @@ in vec2 v_texture;
 in vec3 v_normal;
 in vec3 FragPos;
 
+in vec3 R;
+
 out vec4 out_color;
 
 uniform vec3 viewpos;
@@ -33,10 +35,6 @@ void main() {
         float attenuation = 1.0 / (attenuation[i].x +
                                    attenuation[i].y * distance +
                                    attenuation[i].z * distance * distance);
-        
-        //float attenuation = 1.0 / (1 +
-                            //0.09 * distance +
-                            //0.032 * distance * distance); 
 
         // Diffuse
         vec3 norm = normalize(v_normal);
@@ -53,15 +51,19 @@ void main() {
         totalLighting = totalLighting + (texture(s_texture, v_texture).xyz * (diffuse + specular));
     }
 
-        // Reflection
-    vec3 I = normalize(FragPos - viewpos);
-    vec3 R = reflect(I, normalize(v_normal));
-    vec4 refl = vec4(texture(skybox, R).rgb, 1.0);
-
     //vec3 result = texture(s_texture, v_texture).xyz * (ambient + diffuse + specular);
-    //out_color = vec4(totalLighting, 1.0) * refl;
-    
-    out_color = vec4(totalLighting, 1.0);
+    //out_color = vec4(result, 1.0) * refl;
+
+
+    //vec3 I = normalize(FragPos - viewpos);
+    //vec3 R = reflect(I, normalize(v_normal));
+    //vec4 test = vec4(texture(skybox, R).rgb, 1.0);
+
+    //out_color = vec4(totalLighting, 1.0) * test;
+
+    #extension GL_NV_shadow_samplers_cube : enable
+    vec4 texColor = textureCube(skybox, R);
+    out_color = texColor;
 
     //out_color = vec4(vec3(depth), 1.0);
 }

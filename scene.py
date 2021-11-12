@@ -10,7 +10,6 @@ import PIL.Image
 from model import Skybox, _compile_programs
 from light import LampPostLight, Light
 from camera import FirstPersonController
-from ui import Image, Text
 
 def create_skybox(ctx, imageList, width, height):
 

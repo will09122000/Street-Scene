@@ -12,7 +12,9 @@ def load_models(ctx):
         model = loader(ctx)
         models.extend(model)
 
-    models.append(load_obj(ctx, 'assets/models/house.obj', 'assets/textures/wood.png', (11, 0.001, 11), radians(180), 0.01))
+    #models.append(load_obj(ctx, 'assets/models/house.obj', 'assets/textures/wood.png', (11, 0.001, 11), radians(180), 0.01))
+    models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
+
 
     return models
 

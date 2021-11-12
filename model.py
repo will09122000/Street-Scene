@@ -38,6 +38,11 @@ def _compile_programs(ctx: moderngl.Context, force: bool = True):
             vertex_shader   = open('shaders/SkyboxVertex.glsl').read(),
             fragment_shader = open('shaders/SkyboxFragment.glsl').read()
         )
+        PROGRAMS['EnviroMapModel'] = ctx.program(
+            vertex_shader   = open('shaders/EnviroMapVertex.glsl').read(),
+            fragment_shader = open('shaders/EnviroMapFragment.glsl').read()
+        )
+
 class BaseModel:
     '''
     Base model class
@@ -110,19 +115,12 @@ class BaseModel:
         uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
         nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
-        if self.program == PROGRAMS['LightModel']:
-            self.vao = self.ctx.vertex_array(
-                self.program, [
-                    (pos, '3f', 'a_position'),
-                    (uv,  '2f', 'a_texture')
-                ])
-        else:
-            self.vao = self.ctx.vertex_array(
-                self.program, [
-                    (pos, '3f', 'a_position'),
-                    (uv,  '2f', 'a_texture'),
-                    (nor, '3f', 'a_normal')
-                ])
+        self.vao = self.ctx.vertex_array(
+            self.program, [
+                (pos, '3f', 'a_position'),
+                (uv,  '2f', 'a_texture'),
+                (nor, '3f', 'a_normal')
+            ])
 
     def update(self, camera: Camera, lights):
 
@@ -225,6 +223,18 @@ class LightModel(BaseModel):
         self.program = PROGRAMS[__class__.__name__]
         self.create_vao()
 
+    def create_vao(self):
+        pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
+        uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
+        nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
+
+        if self.program == PROGRAMS['LightModel']:
+            self.vao = self.ctx.vertex_array(
+                self.program, [
+                    (pos, '3f', 'a_position'),
+                    (uv,  '2f', 'a_texture')
+                ])
+
     def update(self, camera: Camera):
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
@@ -232,11 +242,9 @@ class LightModel(BaseModel):
         self.program['angle'].value = tuple(self.rotation.tolist())
         self.program['scale'].value = tuple(self.scale.tolist())
 
-
-class StaticModel(BaseModel):
+class EnviroMapModel(BaseModel):
     '''
-    Static model doesn't get effected by camera view
-    mostly meant to be used as UI objects
+
     '''
     def __init__(self,
             ctx: moderngl.Context,
@@ -245,10 +253,13 @@ class StaticModel(BaseModel):
             texture_format: str,
             vertices: list[tuple[float, float, float]],
             tex_coords: list[tuple[float, float]],
+            norm_coords: list[tuple[float, float, float]],
             flip_texture: bool,
+            rotation: float = 0.0,
+            scale: float = 1.0,
             from_filepath: bool = True,
-            build_mipmaps: bool = False):
-        
+            build_mipmaps: bool = True):
+
         super().__init__(
             ctx,
             position,
@@ -256,24 +267,27 @@ class StaticModel(BaseModel):
             texture_format,
             vertices,
             tex_coords,
-            [0],
+            norm_coords,
             flip_texture,
+            rotation,
+            scale,
             from_filepath,
             build_mipmaps)
 
-        self.program = PROGRAMS['static']
+        self.program = PROGRAMS[__class__.__name__]
         self.create_vao()
 
     def create_vao(self):
         pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
         uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
+        nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
         self.vao = self.ctx.vertex_array(
             self.program, [
                 (pos, '3f', 'a_position'),
                 (uv,  '2f', 'a_texture'),
+                (nor, '3f', 'a_normal')
             ])
-
 class Skybox:
     def __init__(self, ctx, texture):
         self.ctx = ctx
@@ -336,10 +350,10 @@ def load_obj(
         direction: int = 1,
         texture_format: str = 'RGB',
         flip_texture: bool = False,
-        light: bool = False) -> Union[BaseModel, LightModel]:
+        light: bool = False):
 
     objfile = parse(obj_filepath)
-    
+
     if light:
         return LightModel(
             ctx,
@@ -351,7 +365,7 @@ def load_obj(
             objfile.vertex_normals,
             flip_texture,
             rotation,
-            scale,)
+            scale)
     elif translation != 0.0:
         return DynamicModel(
             ctx,
@@ -366,6 +380,18 @@ def load_obj(
             scale,
             translation,
             direction)
+    elif scale == 1.1:
+        return EnviroMapModel(
+            ctx,
+            position,
+            texture_filepath,
+            texture_format,
+            objfile.vertices,
+            objfile.uv_coords,
+            objfile.vertex_normals,
+            flip_texture,
+            rotation,
+            scale)
     else:
         return BaseModel(
             ctx,
