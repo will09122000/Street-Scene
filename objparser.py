@@ -26,7 +26,23 @@ class ObjFile:
         self.uv_coords = tex_coords
         self.vertex_normals = norm_coords
         self.smooth_shading = smooth_shading
+class Material:
+    def __init__(self, name=None, Ka=[1.,1.,1.], Kd=[1.,1.,1.], Ks=[1.,1.,1.], Ns=10.0, texture=None):
+        self.name = name
+        self.Ka = Ka
+        self.Kd = Kd
+        self.Ks = Ks
+        self.Ns = Ns
+        self.texture = texture
 
+class MaterialLibrary:
+    def __init__(self):
+        self.materials = []
+        self.names = {}
+
+    def add_material(self,material):
+        self.names[material.name] = len(self.materials)
+        self.materials.append(material)
 
 def parse(filepath: Union[Path, str]) -> ObjFile:
     object_name = ''
@@ -90,3 +106,42 @@ def parse(filepath: Union[Path, str]) -> ObjFile:
     final_norm = list(numpy.concatenate(final_norm).flat)
 
     return ObjFile(object_name, final_vert, final_tex, final_norm, smooth_shading)
+
+def load_material_library(file_name):
+    library = MaterialLibrary()
+    material = None
+
+    print('-- Loading material library {}'.format(file_name))
+
+    mtlfile = open(file_name)
+    for line in mtlfile:
+        fields = line.split()
+        if len(fields) != 0:
+            if fields[0] == 'newmtl':
+                if material is not None:
+                    library.add_material(material)
+
+                material = Material(fields[1])
+                print('Found material definition: {}'.format(material.name))
+            elif fields[0] == 'Ka':
+                material.Ka = np.array(fields[1:], 'f')
+            elif fields[0] == 'Kd':
+                material.Kd = np.array(fields[1:], 'f')
+            elif fields[0] == 'Ks':
+                material.Ks = np.array(fields[1:], 'f')
+            elif fields[0] == 'Ns':
+                material.Ns = float(fields[1])
+            elif fields[0] == 'd':
+                material.d = float(fields[1])
+            elif fields[0] == 'Tr':
+                material.d = 1.0 - float(fields[1])
+            elif fields[0] == 'illum':
+                material.illumination = int(fields[1])
+            elif fields[0] == 'map_Kd':
+                material.texture = fields[1]
+
+    library.add_material(material)
+
+    print('- Done, loaded {} materials'.format(len(library.materials)))
+
+    return library

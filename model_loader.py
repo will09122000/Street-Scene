@@ -12,8 +12,13 @@ def load_models(ctx):
         model = loader(ctx)
         models.extend(model)
 
-    #models.append(load_obj(ctx, 'assets/models/house.obj', 'assets/textures/wood.png', (11, 0.001, 11), radians(180), 0.01))
-    models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
+    models.append(load_obj(ctx, 'assets/models/terrace.obj', 'assets/textures/terrace.png', (15, 0, 10)))
+    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (8.5, 0, 9.5)))
+    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (13.5, 0, 9.5)))
+    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (18.5, 0, 9.5)))
+    models.append(load_obj(ctx, 'assets/models/windows.obj', 'assets/textures/white.png', (15, 0, 10), light=True))
+    models.append(load_obj(ctx, 'assets/models/terrace_fence.obj', 'assets/textures/terrace_fence.png', (15, 0, 10)))
+    #models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
 
 
     return models
@@ -87,7 +92,7 @@ def load_lamp_posts(ctx):
                         angle1, angle2 = radians(90), radians(-90)
                     else:
                         position = [j, 0, -x_spacer if left else x_spacer]
-                        angle1, angle2 = radians(190), 0
+                        angle1, angle2 = radians(180), 0
 
                     lamp_post = load_obj(ctx, 'assets/models/lampPost.obj', 'assets/textures/lampPost.png', position, angle1 if left else angle2)
                     if i > 0:
