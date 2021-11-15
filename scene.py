@@ -102,10 +102,7 @@ class Scene:
         self.ctx.enable(moderngl.DEPTH_TEST)
 
         for model in self.models:
-            if model.__class__.__name__ == 'LightModel':
-                model.update(self.camera)
-            else:
-                model.update(self.camera, self.lights)
+            model.update(self.camera, self.lights)
 
             if model.__class__.__name__ == 'DynamicModel':
                 model.translate()

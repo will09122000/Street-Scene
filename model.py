@@ -234,7 +234,7 @@ class LightModel(BaseModel):
                 (uv,  '2f', 'a_texture')
             ])
 
-    def update(self, camera: Camera):
+    def update(self, camera, lights=None):
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
@@ -287,7 +287,7 @@ class EnviroMapModel(BaseModel):
                 (nor, '3f', 'a_normal')
             ])
 
-    def update(self, camera, lights):
+    def update(self, camera, lights=None):
 
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
@@ -359,7 +359,9 @@ def load_obj(
         direction: int = 1,
         texture_format: str = 'RGB',
         flip_texture: bool = False,
-        light: bool = False):
+        light: bool = False,
+        dynamic = False,
+        mirror = False):
 
     objfile = parse(obj_filepath)
 
@@ -375,7 +377,7 @@ def load_obj(
             flip_texture,
             rotation,
             scale)
-    elif translation != 0.0:
+    elif dynamic:
         return DynamicModel(
             ctx,
             position,
@@ -389,7 +391,7 @@ def load_obj(
             scale,
             translation,
             direction)
-    elif scale == 1.1:
+    elif mirror:
         return EnviroMapModel(
             ctx,
             position,

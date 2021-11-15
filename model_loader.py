@@ -19,7 +19,7 @@ def load_models(ctx):
     models.append(load_obj(ctx, 'assets/models/windows.obj', 'assets/textures/white.png', (15, 0, 10), light=True))
     models.append(load_obj(ctx, 'assets/models/terrace_fence.obj', 'assets/textures/terrace_fence.png', (15, 0, 10)))
 
-    models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
+    models.append(load_obj(ctx, 'assets/models/tree.obj', 'assets/textures/white.png', (0, 0, 0), mirror=True))
 
     return models
 
@@ -38,10 +38,10 @@ def load_cars(ctx):
     colour = choices([0, 1, 2], k=9)
 
     # Moving cars
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[0]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge, 0, -1.1), 0, 0.6, 0.08, 1))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[1]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge/4, 0, -1.1), 0, 0.6, 0.08, 1))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge, 0, 1.1), radians(180), 0.6, 0.09, -1))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge/4, 0, 1.1), radians(180), 0.6, 0.09, -1))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[0]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge, 0, -1.1), 0, 0.6, 0.08, 1, dynamic=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[1]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge/4, 0, -1.1), 0, 0.6, 0.08, 1, dynamic=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge, 0, 1.1), radians(180), 0.6, 0.09, -1, dynamic=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge/4, 0, 1.1), radians(180), 0.6, 0.09, -1, dynamic=True))
 
     # Stationary cars
     cars.append(load_obj(ctx, 'assets/models/car' + str(colour[4]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (1.1, 0, 8), radians(90), 0.6))

@@ -30,8 +30,4 @@ void main() {
 
     out_color = refl;
 
-    //#extension GL_NV_shadow_samplers_cube : enable
-    //vec4 texColor = textureCube(skybox, R);
-    //out_color = texColor;
-
 }
