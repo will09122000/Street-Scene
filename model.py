@@ -93,6 +93,24 @@ class BaseModel:
 
         self.create_texture()
 
+    def update(self, camera: Camera, lights):
+
+        self.program['projection'].value = tuple(camera.projection.flatten())
+        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
+        self.program['model'].value = tuple(self.pos_matrix.flatten())
+        self.program['angle'].value = tuple(self.rotation.tolist())
+        self.program['scale'].value = tuple(self.scale.tolist())
+        self.program['viewpos'].value = tuple(camera.final_position.tolist())
+
+        self.program['num_lights'].value         = len(lights)
+        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
+        self.program['color'].value              = [light.color for light in lights]
+        self.program['ambient'].value  = [light.ambient for light in lights]
+        self.program['diffuse'].value  = [light.diffuse for light in lights]
+        self.program['specular'].value = [light.specular for light in lights]
+        self.program['specular_power'].value     = [light.specular_power for light in lights]
+        self.program['attenuation'].value = [light.attenuation for light in lights]
+
     def create_texture(self):
         self.texture = self.ctx.texture(
             self.surface.get_size(),
@@ -121,24 +139,6 @@ class BaseModel:
                 (uv,  '2f', 'a_texture'),
                 (nor, '3f', 'a_normal')
             ])
-
-    def update(self, camera: Camera, lights):
-
-        self.program['projection'].value = tuple(camera.projection.flatten())
-        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
-        self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist())
-        self.program['scale'].value = tuple(self.scale.tolist())
-        self.program['viewpos'].value = tuple(camera.final_position.tolist())
-
-        self.program['num_lights'].value         = len(lights)
-        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
-        self.program['color'].value              = [light.color for light in lights]
-        self.program['ambient'].value  = [light.ambient for light in lights]
-        self.program['diffuse'].value  = [light.diffuse for light in lights]
-        self.program['specular'].value = [light.specular for light in lights]
-        self.program['specular_power'].value     = [light.specular_power for light in lights]
-        self.program['attenuation'].value = [light.attenuation for light in lights]
 
     def render(self, skybox=None):
         self.texture.use(location=0)
@@ -226,14 +226,13 @@ class LightModel(BaseModel):
     def create_vao(self):
         pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
         uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
-        nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
+        #nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
-        if self.program == PROGRAMS['LightModel']:
-            self.vao = self.ctx.vertex_array(
-                self.program, [
-                    (pos, '3f', 'a_position'),
-                    (uv,  '2f', 'a_texture')
-                ])
+        self.vao = self.ctx.vertex_array(
+            self.program, [
+                (pos, '3f', 'a_position'),
+                (uv,  '2f', 'a_texture')
+            ])
 
     def update(self, camera: Camera):
         self.program['projection'].value = tuple(camera.projection.flatten())
@@ -285,9 +284,19 @@ class EnviroMapModel(BaseModel):
         self.vao = self.ctx.vertex_array(
             self.program, [
                 (pos, '3f', 'a_position'),
-                (uv,  '2f', 'a_texture'),
                 (nor, '3f', 'a_normal')
             ])
+
+    def update(self, camera, lights):
+
+        self.program['projection'].value = tuple(camera.projection.flatten())
+        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
+        self.program['model'].value = tuple(self.pos_matrix.flatten())
+        self.program['angle'].value = tuple(self.rotation.tolist())
+        self.program['scale'].value = tuple(self.scale.tolist())
+        self.program['viewpos'].value = tuple(camera.final_position.tolist())
+
+
 class Skybox:
     def __init__(self, ctx, texture):
         self.ctx = ctx

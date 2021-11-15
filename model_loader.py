@@ -18,8 +18,8 @@ def load_models(ctx):
     models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (18.5, 0, 9.5)))
     models.append(load_obj(ctx, 'assets/models/windows.obj', 'assets/textures/white.png', (15, 0, 10), light=True))
     models.append(load_obj(ctx, 'assets/models/terrace_fence.obj', 'assets/textures/terrace_fence.png', (15, 0, 10)))
-    #models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
 
+    models.append(load_obj(ctx, 'assets/models/cube.obj', 'assets/textures/white.png', (0, 1, 0), 0, 1.1))
 
     return models
 

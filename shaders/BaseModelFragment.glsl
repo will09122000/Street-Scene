@@ -62,6 +62,4 @@ void main() {
     //out_color = vec4(totalLighting, 1.0) * refl;
     
     out_color = vec4(totalLighting, 1.0);
-
-    //out_color = vec4(vec3(depth), 1.0);
 }

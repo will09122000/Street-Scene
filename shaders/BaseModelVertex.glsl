@@ -46,7 +46,7 @@ void main() {
     vec3 spos = vec3(a_position.x*scale.x, a_position.y*scale.y, a_position.z*scale.z);
     vec3 pos = rotz(rotx(roty(spos, angle.y), angle.x), angle.z);
     vec3 normal = rotz(rotx(roty(a_normal, angle.y), angle.x), angle.z);
-    
+
     vec4 glpos = projection * view * model * vec4(pos, 1.0);
     v_texture = a_texture;
     v_normal = mat3(transpose(inverse(model))) * normal;

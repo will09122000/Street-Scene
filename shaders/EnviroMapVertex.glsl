@@ -1,7 +1,7 @@
 #version 330
 
 in vec3 a_position;
-in vec2 a_texture;
+//in vec2 a_texture;
 in vec3 a_normal;
 
 uniform mat4 model;
@@ -15,7 +15,7 @@ out vec2 v_texture;
 out vec3 v_normal;
 out vec3 FragPos;
 out vec4 lightspace;
-out vec3 R;
+//out vec3 R;
 
 vec3 rotx(in vec3 pos, in float angle) {
     return mat3(
@@ -48,9 +48,9 @@ void main() {
     vec3 normal = rotz(rotx(roty(a_normal, angle.y), angle.x), angle.z);
     
     vec4 glpos = projection * view * model * vec4(pos, 1.0);
-    v_texture = a_texture;
+    //v_texture = a_texture;
     v_normal = mat3(transpose(inverse(model))) * normal;
     FragPos = vec3(model * vec4(pos, 1.0));
     gl_Position = glpos;
-    R = reflect(pos.xyz, normalize(glpos.xyz)); 
+    //R = reflect(pos.xyz, normalize(glpos.xyz)); 
 }
