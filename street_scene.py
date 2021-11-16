@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     # initialises the scene object
     print('Initialising Scene')
-    scene = Scene(width=1920, height=1080)
+    scene = Scene(width=1280, height=720)
 
     # load here the 3d meshes
     print('Loading Models')

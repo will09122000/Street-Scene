@@ -9,13 +9,13 @@ out vec4 out_color;
 uniform vec3 viewpos;
 
 uniform int num_lights;
-uniform vec3 lightpos[25];
-uniform vec3 color[25];
-uniform float ambient[25];
-uniform float diffuse[25];
-uniform float specular[25];
-uniform float specular_power[25];
-uniform vec3 attenuation[25];
+uniform vec3 lightpos[36];
+uniform vec3 color[36];
+uniform float ambient[36];
+uniform float diffuse[36];
+uniform float specular[36];
+uniform float specular_power[36];
+uniform vec3 attenuation[36];
 
 uniform sampler2D s_texture;
 uniform samplerCube skybox;

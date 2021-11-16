@@ -8,7 +8,7 @@ import pyrr
 import PIL.Image
 
 from model import Skybox, _compile_programs
-from light import LampPostLight, Light
+from light import LampPostLight, WindowLight, Light
 from camera import FirstPersonController
 
 def create_skybox(ctx, imageList, width, height):
@@ -69,7 +69,10 @@ class Scene:
     def add_lighting(self):
         for model in self.models:
             if model.__class__.__name__ == 'LightModel':
-                self.lights.append(LampPostLight(model.position))
+                if model.light_type == 'lampPost':
+                    self.lights.append(LampPostLight(model.position))
+                elif model.light_type == 'window':
+                    self.lights.append(WindowLight(model.position))
 
     def draw(self):
         self.clock.tick(60)

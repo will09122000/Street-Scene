@@ -6,18 +6,11 @@ map_edge = 24
 
 def load_models(ctx):
     models = []
-    model_list = [load_floor, load_cars, load_trees, load_lamp_posts]
+    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces]
 
     for i, loader in enumerate(model_list):
         model = loader(ctx)
         models.extend(model)
-
-    models.append(load_obj(ctx, 'assets/models/terrace.obj', 'assets/textures/terrace.png', (15, 0, 10)))
-    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (8.5, 0, 9.5)))
-    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (13.5, 0, 9.5)))
-    models.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (18.5, 0, 9.5)))
-    models.append(load_obj(ctx, 'assets/models/windows.obj', 'assets/textures/white.png', (15, 0, 10), light=True))
-    models.append(load_obj(ctx, 'assets/models/terrace_fence.obj', 'assets/textures/terrace_fence.png', (15, 0, 10)))
 
     models.append(load_obj(ctx, 'assets/models/tree.obj', 'assets/textures/white.png', (0, 0, 0), mirror=True))
 
@@ -99,8 +92,30 @@ def load_lamp_posts(ctx):
                         light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2]-((0.009 if left else -0.009)*k))
                     else:
                         light_position = (position[0]+((0.018 if left else 0.0008)*k), position[1]+2.16, position[2]+(-0.29*k))
-                    lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, light=True)
+                    lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, light_type='lampPost')
                     lamp_posts.extend([lamp_post, lamp_post_light])
                     left = not left
 
     return lamp_posts
+
+def load_terraces(ctx):
+    terraces = []
+
+    for i in range(0, -60, -30):
+        terraces.append(load_obj(ctx, 'assets/models/terrace.obj', 'assets/textures/terrace.png', (15+i, 0, 10)))
+        terraces.append(load_obj(ctx, 'assets/models/terrace_fence.obj', 'assets/textures/terrace_fence.png', (15+i, 0, 10)))
+        terraces.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (8.5+i, 0, 9.5)))
+        terraces.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (13.5+i, 0, 9.5)))
+        terraces.append(load_obj(ctx, 'assets/models/chimney.obj', 'assets/textures/chimney.png', (18.5+i, 0, 9.5)))
+        z_modifier = 0
+        for _ in range(0, 2):
+            x_modifier = 0
+            for _ in range(0, 3):
+                terraces.append(load_obj(ctx, 'assets/models/window.obj', 'assets/textures/white.png', (8.5+x_modifier+i, 0.75, 7.52+z_modifier), light_type='window'))
+                terraces.append(load_obj(ctx, 'assets/models/window.obj', 'assets/textures/grey.png', (11.2+x_modifier+i, 0.75, 7.52+z_modifier)))
+                terraces.append(load_obj(ctx, 'assets/models/window.obj', 'assets/textures/grey.png', (8.5+x_modifier+i, 2.25, 7.52+z_modifier)))
+                terraces.append(load_obj(ctx, 'assets/models/window.obj', 'assets/textures/grey.png', (11.2+x_modifier+i, 2.25, 7.52+z_modifier)))
+                x_modifier += 5.1
+            z_modifier += 4.96
+
+    return terraces

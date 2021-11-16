@@ -195,6 +195,7 @@ class LightModel(BaseModel):
     def __init__(self,
             ctx: moderngl.Context,
             position: tuple[float, float, float],
+            light_type,
             texture: str,
             texture_format: str,
             vertices: list[tuple[float, float, float]],
@@ -220,6 +221,7 @@ class LightModel(BaseModel):
             from_filepath,
             build_mipmaps)
 
+        self.light_type = light_type
         self.program = PROGRAMS[__class__.__name__]
         self.create_vao()
 
@@ -359,16 +361,17 @@ def load_obj(
         direction: int = 1,
         texture_format: str = 'RGB',
         flip_texture: bool = False,
-        light: bool = False,
+        light_type = "",
         dynamic = False,
         mirror = False):
 
     objfile = parse(obj_filepath)
 
-    if light:
+    if len(light_type) > 0:
         return LightModel(
             ctx,
             position,
+            light_type,
             texture_filepath,
             texture_format,
             objfile.vertices,
