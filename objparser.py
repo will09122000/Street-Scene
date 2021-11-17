@@ -10,7 +10,7 @@ Only triangular faces are supported
 from typing import Union
 
 from pathlib import Path
-import numpy
+import numpy as np
 
 
 class ObjFile:
@@ -60,32 +60,56 @@ def parse(filepath: Union[Path, str]) -> ObjFile:
     with open(filepath, 'r') as f:
 
         for line in f.readlines():
-            cnt = line.split()
+            line = line.split()
+            if (len(line) > 0):
+                if line[0] == 'o':
+                    object_name = line[1]
 
-            if cnt[0] == 'o':
-                object_name = cnt[1]
+                if line[0] == 'v':
+                    vert_coords.append((float(line[1]), float(line[2]), float(line[3])))
 
-            if cnt[0] == 'v':
-                vert_coords.append((float(cnt[1]), float(cnt[2]), float(cnt[3])))
+                elif line[0] == 'vt':
+                    tex_coords.append((float(line[1]), float(line[2])))
 
-            elif cnt[0] == 'vt':
-                tex_coords.append((float(cnt[1]), float(cnt[2])))
+                elif line[0] == 'vn':
+                    norm_coords.append((float(line[1]), float(line[2]), float(line[3])))
 
-            elif cnt[0] == 'vn':
-                norm_coords.append((float(cnt[1]), float(cnt[2]), float(cnt[3])))
+                elif line[0] == 'f':
+                    face = []
+                    for v in line[1:]:
+                        indice = []
+                        for i in v.split('/'):
+                            try:
+                                value = int(i)
+                            except:
+                                value = 0
+                            indice.append(value)
+                        face.append(indice)
 
-            elif cnt[0] == 'f':
-                for d in cnt[1:]:
-                    h = d.split('/')
-                    vert_indices.append(int(h[0])-1)
-                    tex_indices.append(int(h[1])-1)
-                    norm_indices.append(int(h[2])-1)
+                    if len(face) == 3:
+                        for indice in face:
+                            vert_indices.append(int(indice[0])-1)
+                            tex_indices.append(int(indice[1])-1)
+                            norm_indices.append(int(indice[2])-1)
+                    elif len(face) == 4:
+                        # converts quads into pairs of triangles
+                        face1 = [face[0], face[1], face[2]]
+                        for indice in face1:
+                            vert_indices.append(int(indice[0])-1)
+                            tex_indices.append(int(indice[1])-1)
+                            norm_indices.append(int(indice[2])-1)
 
-            elif cnt[0] == 's':
-                if cnt[1] in ('on', '1'):
-                    smooth_shading = True
-                else:
-                    smooth_shading = False
+                        face2 = [face[0], face[2], face[3]]
+                        for indice in face2:
+                            vert_indices.append(int(indice[0])-1)
+                            tex_indices.append(int(indice[1])-1)
+                            norm_indices.append(int(indice[2])-1)
+
+                elif line[0] == 's':
+                    if line[1] in ('on', '1'):
+                        smooth_shading = True
+                    else:
+                        smooth_shading = False
    
     final_vert = []
     final_tex = []
@@ -101,9 +125,9 @@ def parse(filepath: Union[Path, str]) -> ObjFile:
         final_norm.append(norm_coords[k])
 
 
-    final_vert = list(numpy.concatenate(final_vert).flat)
-    final_tex = list(numpy.concatenate(final_tex).flat)
-    final_norm = list(numpy.concatenate(final_norm).flat)
+    final_vert = list(np.concatenate(final_vert).flat)
+    final_tex = list(np.concatenate(final_tex).flat)
+    final_norm = list(np.concatenate(final_norm).flat)
 
     return ObjFile(object_name, final_vert, final_tex, final_norm, smooth_shading)
 

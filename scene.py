@@ -53,15 +53,24 @@ class Scene:
 
         _compile_programs(self.ctx)
 
-        self.skybox = create_skybox(self.ctx,
-                                           ['assets/skybox/night/right.png',
-                                            'assets/skybox/night/left.png',
-                                            'assets/skybox/night/top.png',
-                                            'assets/skybox/night/bottom.png',
-                                            'assets/skybox/night/back.png',
-                                            'assets/skybox/night/front.png'],
-                                            1024, 1024)
+        self.skybox_day = create_skybox(self.ctx,
+                                        ['assets/skybox/day/right.png',
+                                        'assets/skybox/day/left.png',
+                                        'assets/skybox/day/top.png',
+                                        'assets/skybox/day/bottom.png',
+                                        'assets/skybox/day/back.png',
+                                        'assets/skybox/day/front.png'],
+                                        1024, 1024)
 
+        self.skybox_night = create_skybox(self.ctx,
+                                        ['assets/skybox/night/right.png',
+                                        'assets/skybox/night/left.png',
+                                        'assets/skybox/night/top.png',
+                                        'assets/skybox/night/bottom.png',
+                                        'assets/skybox/night/back.png',
+                                        'assets/skybox/night/front.png'],
+                                        1024, 1024)
+        self.skybox = 'night'
 
     def add_models(self, models):
         self.models = models
@@ -77,30 +86,19 @@ class Scene:
     def draw(self):
         self.clock.tick(60)
 
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                self.running = False
-
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.running = False
-
-
-        keys = pygame.key.get_pressed()
-        mx, my = pygame.mouse.get_pos()
-        rx, ry = pygame.mouse.get_rel()
-        ry *= -1
-
-        self.camera.process(rx, ry, events, keys)
+        self.camera.process(self)
 
         self.ctx.screen.use()
         self.ctx.screen.clear()
 
         self.ctx.disable(moderngl.DEPTH_TEST)
         self.ctx.front_face = 'cw'
-        self.skybox.update(self.camera)
-        self.skybox.render()
+        if self.skybox == 'night':
+            self.skybox_night.update(self.camera)
+            self.skybox_night.render()
+        else:
+            self.skybox_day.update(self.camera)
+            self.skybox_day.render()
         self.ctx.front_face = 'ccw'
         self.ctx.enable(moderngl.DEPTH_TEST)
 

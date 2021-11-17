@@ -8,11 +8,12 @@ def load_models(ctx):
     models = []
     model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces]
 
-    for i, loader in enumerate(model_list):
+    for loader in model_list:
         model = loader(ctx)
         models.extend(model)
 
-    models.append(load_obj(ctx, 'assets/models/tree.obj', 'assets/textures/white.png', (0, 0, 0), mirror=True))
+    #models.append(load_obj(ctx, 'assets/models/tree.obj', 'assets/textures/white.png', (0, 0, 0), mirror=True))
+    models.append(load_obj(ctx, 'assets/models/statue.obj', 'assets/textures/white.png', (15, 0, -15), 0, 15, mirror=True))
 
     return models
 

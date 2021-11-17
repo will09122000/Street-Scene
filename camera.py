@@ -72,138 +72,42 @@ class FirstPersonController(Camera):
         self._default_movement_speed = movement_speed
         self.mouse_sensitivity = 0.17
 
-        self.noclip = False
+    def process(self, scene):
 
-        self.on_ground = False
-        self.is_sprinting = False
-        self.is_ducking = False
-        self.is_walking = False
+        keys = pygame.key.get_pressed()
+        rx, ry = pygame.mouse.get_rel()
 
-        self.key_map = {
-            'forward' : pygame.K_w,
-            'backward': pygame.K_s,
-            'left'    : pygame.K_a,
-            'right'   : pygame.K_d,
-            'up'      : pygame.K_SPACE,
-            'down'    : pygame.K_LCTRL,
-            'sprint'  : pygame.K_LSHIFT,
-            'duck'    : pygame.K_LCTRL,
-            'jump'    : pygame.K_SPACE,
-            'noclip'  : pygame.K_v
-        }
+        rx *= self.mouse_sensitivity
+        ry *= self.mouse_sensitivity
 
-    def process(self, 
-            offset_x: float,
-            offset_y: float,
-            events: list[pygame.event.Event],
-            keys: list[int],
-            constrain_pitch: bool = True):
+        self.yaw += rx
+        self.pitch -= ry
 
-        offset_x *= self.mouse_sensitivity
-        offset_y *= self.mouse_sensitivity
-
-        self.yaw += offset_x
-        self.pitch += offset_y
-
-        if constrain_pitch:
-            if self.pitch > 90: self.pitch = 90
-            if self.pitch < -90: self.pitch = -90
+        if self.pitch > 90: self.pitch = 90
+        if self.pitch < -90: self.pitch = -90
 
         self.update_vectors()
 
-        # Movement
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == self.key_map['sprint']:
-                    self.movement_speed = self._default_movement_speed * 2
-                    self.is_sprinting = True
+        # Controls
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                scene.running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    scene.running = False
+                elif event.key == pygame.K_1:
+                    scene.skybox = 'day' if scene.skybox == 'night' else 'night'
 
-                elif not self.noclip and event.key == self.key_map['duck']:
-                    self.movement_speed = self._default_movement_speed / 3
-                    self.is_ducking = True
+        if keys[pygame.K_w]:
+            self.position += self.front * self.movement_speed
 
-                elif event.key == self.key_map['jump']:
-                    if self.on_ground and not self.noclip:
-                        #jump_sound.play()
-                        self.velocity.y = -self.jump_height
-                        self.on_ground = False
+        if keys[pygame.K_s]:
+            self.position -= self.front * self.movement_speed
 
-                elif event.key == self.key_map['noclip']:
-                    if self.noclip: self.noclip = False
-                    else:
-                        self.noclip = True
-                        self.velocity.y = 0.0
-                        self.on_ground = False
-
-            elif event.type == pygame.KEYUP:
-                if event.key == self.key_map['sprint']:
-                    self.movement_speed = self._default_movement_speed
-                    self.is_sprinting = False
-
-                elif not self.noclip and event.key == self.key_map['duck']:
-                    self.movement_speed = self._default_movement_speed
-                    self.is_ducking = False
-
-            elif event.type == pygame.MOUSEWHEEL:
-                if self.on_ground and not self.noclip:
-                    #jump_sound.play()
-                    self.velocity.y = -self.jump_height
-                    self.on_ground = False
-
-        self.is_walking = False
-
-        if keys[self.key_map['forward']]:
-            self.is_walking = True
-
-            if self.noclip:
-                self.position += self.front * self.movement_speed
-            else:
-                self.position.x += cos(radians(self.yaw)) * self.movement_speed
-                self.position.z += sin(radians(self.yaw)) * self.movement_speed
-
-        if keys[self.key_map['backward']]:
-            if self.is_walking: self.is_walking = False
-            else: self.is_walking = True
-
-            if self.noclip:
-                self.position -= self.front * self.movement_speed
-            else:
-                self.position.x -= cos(radians(self.yaw)) * self.movement_speed
-                self.position.z -= sin(radians(self.yaw)) * self.movement_speed
-
-        if keys[self.key_map['left']]:
+        if keys[pygame.K_a]:
             self.position -= self.right * self.movement_speed
 
-        if keys[self.key_map['right']]:
+        if keys[pygame.K_d]:
             self.position += self.right * self.movement_speed
 
-        if self.noclip and keys[self.key_map['up']]:
-            self.position += self.up * self.movement_speed
-
-        if self.noclip and keys[self.key_map['down']]:
-            self.position -= self.up * self.movement_speed
-
         self.final_position = self.position.copy()
-
-        # Applying gravity
-        if not self.noclip:
-            self.velocity.y += 0.008
-        
-            if self.position.y - self.velocity.y < -2.1:
-                self.velocity.y = 0
-                self.on_ground = True
-
-            self.position.y -= self.velocity.y
-
-            if self.is_ducking:
-                self.final_position.y = self.position.y - 0.9
-            else:
-                self.final_position.y = self.position.y
-
-        # Head obbing
-        if not self.noclip and self.is_walking and not self.is_ducking:
-            if self.is_sprinting: bobbing_factor = 2.14
-            else: bobbing_factor = 1.4
-
-            self.final_position += self.right * sin(pygame.time.get_ticks()*bobbing_factor*0.005) / 3
-            self.final_position.y += cos(pygame.time.get_ticks()*(bobbing_factor*2)*0.005) / 5
