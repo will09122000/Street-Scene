@@ -6,14 +6,14 @@ map_edge = 24
 
 def load_models(ctx):
     models = []
-    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces]
+    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue, load_football_pitch]
 
     for loader in model_list:
         model = loader(ctx)
         models.extend(model)
 
-    #models.append(load_obj(ctx, 'assets/models/tree.obj', 'assets/textures/white.png', (0, 0, 0), mirror=True))
-    models.append(load_obj(ctx, 'assets/models/statue.obj', 'assets/textures/white.png', (15, 0, -15), 0, 15, mirror=True))
+    models.append(load_obj(ctx, 'assets/models/mgr.obj', 'assets/textures/mgr.png', (10, 0, -10), radians(1), 1, rotate=True))
+
 
     return models
 
@@ -32,17 +32,17 @@ def load_cars(ctx):
     colour = choices([0, 1, 2], k=9)
 
     # Moving cars
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[0]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge, 0, -1.1), 0, 0.6, 0.08, 1, dynamic=True))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[1]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (map_edge/4, 0, -1.1), 0, 0.6, 0.08, 1, dynamic=True))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge, 0, 1.1), radians(180), 0.6, 0.09, -1, dynamic=True))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (-map_edge/4, 0, 1.1), radians(180), 0.6, 0.09, -1, dynamic=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[0]) + '.obj', 'assets/textures/car' + str(colour[4]) + '.png', (map_edge, 0, -1.1), 0, 0.6, 0.08, translate=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[1]) + '.obj', 'assets/textures/car' + str(colour[4]) + '.png', (map_edge/4, 0, -1.1), 0, 0.6, 0.08, translate=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[2]) + '.obj', 'assets/textures/car' + str(colour[4]) + '.png', (-map_edge, 0, 1.1), radians(180), 0.6, 0.09, translate=True))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[3]) + '.obj', 'assets/textures/car' + str(colour[4]) + '.png', (-map_edge/4, 0, 1.1), radians(180), 0.6, 0.09, translate=True))
 
-    # Stationary cars
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[4]) +'.obj', 'assets/textures/car' + str(colour[4]) +'.png', (1.1, 0, 8), radians(90), 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[5]) +'.obj', 'assets/textures/car' + str(colour[5]) +'.png', (1.1, 0, 12), radians(90), 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[6]) +'.obj', 'assets/textures/car' + str(colour[6]) +'.png', (1.1, 0, 16), radians(90), 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[7]) +'.obj', 'assets/textures/car' + str(colour[7]) +'.png', (-1.1, 0, -8), radians(-90), 0.6))
-    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[8]) +'.obj', 'assets/textures/car' + str(colour[8]) +'.png', (-1.1, 0, -12), radians(-90), 0.6))
+    # Stationary cars  
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[4]) + '.obj', 'assets/textures/car' + str(colour[4]) + '.png', (1.1, 0, 8), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[5]) + '.obj', 'assets/textures/car' + str(colour[5]) + '.png', (1.1, 0, 12), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[6]) + '.obj', 'assets/textures/car' + str(colour[6]) + '.png', (1.1, 0, 16), radians(90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[7]) + '.obj', 'assets/textures/car' + str(colour[7]) + '.png', (-1.1, 0, -8), radians(-90), 0.6))
+    cars.append(load_obj(ctx, 'assets/models/car' + str(colour[8]) + '.obj', 'assets/textures/car' + str(colour[8]) + '.png', (-1.1, 0, -12), radians(-90), 0.6))
 
     return cars
 
@@ -90,9 +90,9 @@ def load_lamp_posts(ctx):
 
                     lamp_post = load_obj(ctx, 'assets/models/lampPost.obj', 'assets/textures/lampPost.png', position, angle1 if left else angle2)
                     if i > 0:
-                        light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2]-((0.009 if left else -0.009)*k))
+                        light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2])
                     else:
-                        light_position = (position[0]+((0.018 if left else 0.0008)*k), position[1]+2.16, position[2]+(-0.29*k))
+                        light_position = (position[0], position[1]+2.16, position[2]+(-0.29*k))
                     lamp_post_light = load_obj(ctx, 'assets/models/lampPostLight.obj', 'assets/textures/lampPostLight.png', light_position, angle1 if left else angle2, 0.15, light_type='lampPost')
                     lamp_posts.extend([lamp_post, lamp_post_light])
                     left = not left
@@ -120,3 +120,22 @@ def load_terraces(ctx):
             z_modifier += 4.96
 
     return terraces
+
+def load_statue(ctx):
+    return [load_obj(ctx, 'assets/models/statue.obj', 'assets/textures/white.png', (15, 0, -15), 0, 15, mirror=True)]
+
+def load_football_pitch(ctx):
+    football_pitch_items = []
+
+    football_pitch_items.append(load_obj(ctx, 'assets/models/goal.obj', 'assets/textures/white.png', (-16.59, 0, -7.1), 0, 0.006))
+    football_pitch_items.append(load_obj(ctx, 'assets/models/goal.obj', 'assets/textures/white.png', (-13.6, 0, -23.7), radians(180), 0.006))
+
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLight.obj', 'assets/textures/lampPost.png', (-9, 0, -15.4), radians(90)))
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLightLight.obj', 'assets/textures/white.png', (-9, 0, -15.845), 0, light_type='floodLight'))
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLightLight.obj', 'assets/textures/white.png', (-9, 0, -14.95), 0, light_type='floodLight'))
+
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLight.obj', 'assets/textures/lampPost.png', (-21.2, 0, -15.4), radians(90)))
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLightLight.obj', 'assets/textures/white.png', (-21.2, 0, -15.845), 0, light_type='floodLight'))
+    football_pitch_items.append(load_obj(ctx, 'assets/models/floodLightLight.obj', 'assets/textures/white.png', (-21.2, 0, -14.95), 0, light_type='floodLight'))
+
+    return football_pitch_items

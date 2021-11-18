@@ -65,7 +65,7 @@ class BaseModel:
         self.program = PROGRAMS[__class__.__name__]
 
         self.position = position
-        self.rotation = pyrr.Vector3([0.0, rotation, 0.0])
+        self.rotation = pyrr.Vector4([0.0, rotation, 0.0, 1.0])
         self.scale = pyrr.Vector3([scale, scale, scale])
 
         self.texture_format = texture_format
@@ -98,7 +98,7 @@ class BaseModel:
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist())
+        self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
         self.program['scale'].value = tuple(self.scale.tolist())
         self.program['viewpos'].value = tuple(camera.final_position.tolist())
 
@@ -146,6 +146,10 @@ class BaseModel:
 
         self.vao.render()
 
+    def rotate(self):
+        rotation_matrix = pyrr.matrix44.create_from_y_rotation(self.rotation[1])
+        self.pos_matrix = pyrr.matrix44.multiply(rotation_matrix, self.pos_matrix)
+
 class DynamicModel(BaseModel):
     def __init__(self,
         ctx: moderngl.Context,
@@ -159,7 +163,6 @@ class DynamicModel(BaseModel):
         rotation: float = 0.0,
         scale: float = 1.0,
         translation: float = 0.0,
-        direction: int = 1,
         from_filepath: bool = True,
         build_mipmaps: bool = True):
 
@@ -178,14 +181,13 @@ class DynamicModel(BaseModel):
             build_mipmaps)
 
         self.translation = translation
-        self.direction = direction
 
     def translate(self):
         if np.abs(self.pos_matrix).max() > map_edge:
-            translation_matrix = pyrr.matrix44.create_from_translation([map_edge * self.direction * 2, 0, 0])
+            translation_matrix = pyrr.matrix44.create_from_translation([map_edge * 2, 0, 0])
             self.pos_matrix = pyrr.matrix44.multiply(translation_matrix, self.pos_matrix)
         else:
-            translation_matrix = pyrr.matrix44.create_from_translation([self.translation * -self.direction, 0, 0])
+            translation_matrix = pyrr.matrix44.create_from_translation([-self.translation, 0, 0])
             self.pos_matrix = pyrr.matrix44.multiply(translation_matrix, self.pos_matrix)
 
 class LightModel(BaseModel):
@@ -240,7 +242,7 @@ class LightModel(BaseModel):
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist())
+        #self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
         self.program['scale'].value = tuple(self.scale.tolist())
 
 class EnviroMapModel(BaseModel):
@@ -294,7 +296,7 @@ class EnviroMapModel(BaseModel):
         self.program['projection'].value = tuple(camera.projection.flatten())
         self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist())
+        self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
         self.program['scale'].value = tuple(self.scale.tolist())
         self.program['viewpos'].value = tuple(camera.final_position.tolist())
 
@@ -358,11 +360,11 @@ def load_obj(
         rotation: float = 0.0,
         scale: float = 1.0,
         translation: float = 0.0,
-        direction: int = 1,
         texture_format: str = 'RGB',
         flip_texture: bool = False,
         light_type = "",
-        dynamic = False,
+        translate = False,
+        rotate = False,
         mirror = False):
 
     objfile = parse(obj_filepath)
@@ -380,7 +382,7 @@ def load_obj(
             flip_texture,
             rotation,
             scale)
-    elif dynamic:
+    elif translate or rotate:
         return DynamicModel(
             ctx,
             position,
@@ -392,8 +394,7 @@ def load_obj(
             flip_texture,
             rotation,
             scale,
-            translation,
-            direction)
+            translation)
     elif mirror:
         return EnviroMapModel(
             ctx,

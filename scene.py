@@ -8,7 +8,7 @@ import pyrr
 import PIL.Image
 
 from model import Skybox, _compile_programs
-from light import LampPostLight, WindowLight, Light
+from light import LampPostLight, WindowLight, FloodLight
 from camera import FirstPersonController
 
 def create_skybox(ctx, imageList, width, height):
@@ -75,6 +75,9 @@ class Scene:
     def add_models(self, models):
         self.models = models
 
+        for model in models:
+            model.rotate()
+
     def add_lighting(self):
         for model in self.models:
             if model.__class__.__name__ == 'LightModel':
@@ -82,6 +85,8 @@ class Scene:
                     self.lights.append(LampPostLight(model.position))
                 elif model.light_type == 'window':
                     self.lights.append(WindowLight(model.position))
+                elif model.light_type == 'floodLight':
+                    self.lights.append(FloodLight(model.position))
 
     def draw(self):
         self.clock.tick(60)
@@ -106,7 +111,11 @@ class Scene:
             model.update(self.camera, self.lights)
 
             if model.__class__.__name__ == 'DynamicModel':
-                model.translate()
+                if model.translation > 0:
+                    model.translate()
+                elif model.rotation[1] > 0:
+                    model.rotate()
+
             model.render()
 
         pygame.display.flip()

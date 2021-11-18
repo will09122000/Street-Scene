@@ -44,12 +44,12 @@ vec3 rotz(in vec3 pos, in float angle) {
 
 void main() {
     vec3 spos = vec3(a_position.x*scale.x, a_position.y*scale.y, a_position.z*scale.z);
-    vec3 pos = rotz(rotx(roty(spos, angle.y), angle.x), angle.z);
+    //vec3 pos = rotz(rotx(roty(spos, angle.y), angle.x), angle.z);
     vec3 normal = rotz(rotx(roty(a_normal, angle.y), angle.x), angle.z);
 
-    vec4 glpos = projection * view * model * vec4(pos, 1.0);
+    vec4 glpos = projection * view * model * vec4(spos, 1.0);
     v_texture = a_texture;
     v_normal = mat3(transpose(inverse(model))) * normal;
-    FragPos = vec3(model * vec4(pos, 1.0));
+    FragPos = vec3(model * vec4(spos, 1.0));
     gl_Position = glpos;
 }
