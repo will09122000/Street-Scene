@@ -1,38 +1,45 @@
 from pyrr import Vector3
 
 class Light:
-    '''
-    Basic Phong (Ambient & Diffuse & Specular) lighting
-    '''
+    """
+    A class to represent a point light in the scene.
+
+    Attributes
+    ----------
+    position :           Vector3 | The position of the light as a 3D vector.
+    color :                tuple | The color of light emitted in an RGB format.
+    ambient                float | Strength of ambient lighting from 0 to 1.
+    diffuse                float | Strength of diffuse lighting from 0 to 1.
+    specular               float | Strength of specular lighting from 0 to 1.
+    attenuation            tuple | The constant, linear and quadratic attenuation.
+    """
+
     def __init__(self,
-                position: tuple[float, float, float],
-                color: tuple[float, float, float] = (1.0, 1.0, 1.0),
-                ambient: float = 0.0,
-                diffuse: float = 0.1,
-                specular: float = 0.1,
-                specular_power: float = 1,
-                attenuation: tuple[float, float, float] = (1.0, 0.09, 0.032)):
+                position,
+                color,
+                ambient,
+                diffuse,
+                specular,
+                attenuation):
 
         self.position = Vector3(position)
         self.color = color
         self.ambient = ambient
         self.diffuse = diffuse
         self.specular = specular
-        self.specular_power = specular_power
         self.attenuation = attenuation
 
 class LampPostLight(Light):
-    '''
-    Light model doesn't get effected by any light source
-    '''
+    """
+    An orange light to emit from the top of the lamp post.
+    """
     def __init__(self,
-                position: tuple[float, float, float],
-                color: tuple[float, float, float] = (1.0, 0.73, 0.0),
-                ambient: float = 0.0,
-                diffuse: float = 0.5,
-                specular: float = 0.2,
-                specular_power: float = 1.0,
-                attenuation: tuple[float, float, float] = (0.5, 0.1, 0.05)):
+                position,
+                color       = (1.0, 0.73, 0.0),
+                ambient     = 0.0,
+                diffuse     = 0.5,
+                specular    = 0.2,
+                attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(
             position,
@@ -40,21 +47,19 @@ class LampPostLight(Light):
             ambient,
             diffuse,
             specular,
-            specular_power,
             attenuation)
 
 class WindowLight(Light):
-    '''
-    Light model doesn't get effected by any light source
-    '''
+    """
+    A white light emitting from a house window.
+    """
     def __init__(self,
-                position: tuple[float, float, float],
-                color: tuple[float, float, float] = (0.2, 0.2, 0.2),
-                ambient: float = 0.0,
-                diffuse: float = 0.5,
-                specular: float = 0.2,
-                specular_power: float = 1.0,
-                attenuation: tuple[float, float, float] = (0.5, 0.1, 0.05)):
+                position,
+                color       = (0.2, 0.2, 0.2),
+                ambient     = 0.0,
+                diffuse     = 0.5,
+                specular    = 0.2,
+                attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(
             position,
@@ -62,21 +67,19 @@ class WindowLight(Light):
             ambient,
             diffuse,
             specular,
-            specular_power,
             attenuation)
-            
+
 class FloodLight(Light):
-    '''
-    Light model doesn't get effected by any light source
-    '''
+    """
+    An orange light to emit from the top of the football pitch floodlight.
+    """
     def __init__(self,
-                position: tuple[float, float, float],
-                color: tuple[float, float, float] = (0.8, 0.8, 0.8),
-                ambient: float = 0.0,
-                diffuse: float = 0.5,
-                specular: float = 0.2,
-                specular_power: float = 1.0,
-                attenuation: tuple[float, float, float] = (0.5, 0.1, 0.05)):
+                position,
+                color       = (1.0, 1.0, 1.0),
+                ambient     = 0.0,
+                diffuse     = 0.5,
+                specular    = 0.2,
+                attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(
             position,
@@ -84,5 +87,4 @@ class FloodLight(Light):
             ambient,
             diffuse,
             specular,
-            specular_power,
             attenuation)

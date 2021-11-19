@@ -6,7 +6,8 @@ map_edge = 24
 
 def load_models(ctx):
     models = []
-    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue, load_football_pitch]
+    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue,
+                  load_football_pitch]
 
     for loader in model_list:
         model = loader(ctx)

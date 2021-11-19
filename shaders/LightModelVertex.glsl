@@ -1,20 +1,22 @@
 #version 330
 
-in vec3 a_position;
-in vec2 a_texture;
+// In attributes.
+in vec3 position;
+in vec2 texture_coord;
 
-uniform mat4 model;
+// Uniforms.
 uniform mat4 projection;
+uniform mat4 model;
 uniform mat4 view;
-
 uniform vec3 scale;
 
+// Out attributes.
 out vec2 v_texture;
 
 void main() {
-    vec3 spos = vec3(a_position.x*scale.x, a_position.y*scale.y, a_position.z*scale.z);
 
-    vec4 glpos = projection * view * model * vec4(spos, 1.0);
-    gl_Position = glpos;
-    v_texture = a_texture;
+    vec3 scaled_position = vec3(position.x * scale.x, position.y * scale.y, position.z * scale.z);
+
+    v_texture = texture_coord;
+    gl_Position = projection * view * model * vec4(scaled_position, 1.0);;
 }

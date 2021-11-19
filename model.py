@@ -1,5 +1,3 @@
-from typing import Union
-
 from pathlib import Path
 import struct
 import pygame
@@ -9,57 +7,46 @@ import numpy as np
 
 from objparser import parse
 from camera import Camera
-from light import Light
 
 map_edge = 24
 
 PROGRAMS = {}
-def _compile_programs(ctx: moderngl.Context, force: bool = True):
-    '''
-    This function caches shader programs for models to use
-
-    'force' keyword recompiles all shaders
-    '''
+def compile_shaders(ctx):
+    """
+    
+    """
     print('Compiling Shaders')
 
-    if len(PROGRAMS) == 0 or force:
-        PROGRAMS.clear()
-        PROGRAMS['BaseModel'] = ctx.program(
-            vertex_shader   = open('shaders/BaseModelVertex.glsl').read(),
-            fragment_shader = open('shaders/BaseModelFragment.glsl').read()
-        )
+    PROGRAMS.clear()
+    PROGRAMS['BaseModel'] = ctx.program(vertex_shader = open('shaders/BaseModelVertex.glsl').read(),
+                                        fragment_shader = open('shaders/BaseModelFragment.glsl').read())
 
-        PROGRAMS['LightModel'] = ctx.program(
-            vertex_shader   = open('shaders/LightModelVertex.glsl').read(),
-            fragment_shader = open('shaders/LightModelFragment.glsl').read()
-        )
+    PROGRAMS['LightModel'] = ctx.program(vertex_shader = open('shaders/LightModelVertex.glsl').read(),
+                                         fragment_shader = open('shaders/LightModelFragment.glsl').read())
 
-        PROGRAMS['Skybox'] = ctx.program(
-            vertex_shader   = open('shaders/SkyboxVertex.glsl').read(),
-            fragment_shader = open('shaders/SkyboxFragment.glsl').read()
-        )
-        PROGRAMS['EnviroMapModel'] = ctx.program(
-            vertex_shader   = open('shaders/EnviroMapVertex.glsl').read(),
-            fragment_shader = open('shaders/EnviroMapFragment.glsl').read()
-        )
+    PROGRAMS['Skybox'] = ctx.program(vertex_shader = open('shaders/SkyboxVertex.glsl').read(),
+                                     fragment_shader = open('shaders/SkyboxFragment.glsl').read())
+
+    PROGRAMS['EnviroMapModel'] = ctx.program(vertex_shader = open('shaders/EnviroMapVertex.glsl').read(),
+                                             fragment_shader = open('shaders/EnviroMapFragment.glsl').read())
 
 class BaseModel:
     '''
     Base model class
     '''
     def __init__(self,
-            ctx: moderngl.Context,
-            position: tuple[float, float, float],
-            texture: str,
-            texture_format: str,
-            vertices: list[tuple[float, float, float]],
-            tex_coords: list[tuple[float, float]],
-            norm_coords: list[tuple[float, float, float]],
-            flip_texture: bool,
-            rotation: float = 0.0,
-            scale: float = 1.0,
-            from_filepath: bool = True,
-            build_mipmaps: bool = True):
+            ctx,
+            position,
+            texture,
+            texture_format,
+            vertices,
+            tex_coords,
+            norm_coords,
+            flip_texture,
+            rotation = 0.0,
+            scale = 1.0,
+            from_filepath = True,
+            build_mipmaps = True):
 
         self.ctx = ctx
         self.program = PROGRAMS[__class__.__name__]
@@ -93,35 +80,33 @@ class BaseModel:
 
         self.create_texture()
 
-    def update(self, camera: Camera, lights):
+    def update(self, camera, lights):
 
+        # Vertex
         self.program['projection'].value = tuple(camera.projection.flatten())
-        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
+        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['scale'].value = tuple(self.scale.tolist())
-        self.program['viewpos'].value = tuple(camera.final_position.tolist())
 
+        # Fragment
+        self.program['view_position'].value = tuple(camera.position.tolist())
         self.program['num_lights'].value         = len(lights)
-        self.program['lightpos'].value           = [tuple(light.position.tolist()) for light in lights]
+        self.program['light_position'].value           = [tuple(light.position.tolist()) for light in lights]
         self.program['color'].value              = [light.color for light in lights]
         self.program['ambient'].value  = [light.ambient for light in lights]
         self.program['diffuse'].value  = [light.diffuse for light in lights]
         self.program['specular'].value = [light.specular for light in lights]
-        self.program['specular_power'].value     = [light.specular_power for light in lights]
         self.program['attenuation'].value = [light.attenuation for light in lights]
 
     def create_texture(self):
-        self.texture = self.ctx.texture(
-            self.surface.get_size(),
-            len(self.texture_format),
-            pygame.image.tostring(self.surface, self.texture_format, True)
+        self.texture = self.ctx.texture(self.surface.get_size(),
+                                        len(self.texture_format),
+                                        pygame.image.tostring(self.surface, self.texture_format, True)
         )
 
         self.texture.repeat_x = False
         self.texture.repeat_y = False
 
-        #self.texture.anisotropy = 16
         if self.build_mipmaps: self.texture.build_mipmaps()
 
     def update_texture(self):
@@ -135,9 +120,9 @@ class BaseModel:
 
         self.vao = self.ctx.vertex_array(
             self.program, [
-                (pos, '3f', 'a_position'),
-                (uv,  '2f', 'a_texture'),
-                (nor, '3f', 'a_normal')
+                (pos, '3f', 'position'),
+                (uv,  '2f', 'texture_coord'),
+                (nor, '3f', 'normal')
             ])
 
     def render(self, skybox=None):
@@ -152,19 +137,19 @@ class BaseModel:
 
 class DynamicModel(BaseModel):
     def __init__(self,
-        ctx: moderngl.Context,
-        position: tuple[float, float, float],
-        texture: str,
-        texture_format: str,
-        vertices: list[tuple[float, float, float]],
-        tex_coords: list[tuple[float, float]],
-        norm_coords: list[tuple[float, float, float]],
-        flip_texture: bool,
-        rotation: float = 0.0,
-        scale: float = 1.0,
-        translation: float = 0.0,
-        from_filepath: bool = True,
-        build_mipmaps: bool = True):
+        ctx,
+        position,
+        texture,
+        texture_format,
+        vertices,
+        tex_coords,
+        norm_coords,
+        flip_texture,
+        rotation = 0.0,
+        scale = 1.0,
+        translation = 0.0,
+        from_filepath = True,
+        build_mipmaps = True):
 
         super().__init__(
             ctx,
@@ -195,19 +180,19 @@ class LightModel(BaseModel):
     Unlit model doesn't get effected by any light source
     '''
     def __init__(self,
-            ctx: moderngl.Context,
-            position: tuple[float, float, float],
+            ctx,
+            position,
             light_type,
-            texture: str,
-            texture_format: str,
-            vertices: list[tuple[float, float, float]],
-            tex_coords: list[tuple[float, float]],
-            norm_coords: list[tuple[float, float, float]],
-            flip_texture: bool,
-            rotation: float = 0.0,
-            scale: float = 1.0,
-            from_filepath: bool = True,
-            build_mipmaps: bool = True):
+            texture,
+            texture_format,
+            vertices,
+            tex_coords,
+            norm_coords,
+            flip_texture,
+            rotation = 0.0,
+            scale = 1.0,
+            from_filepath = True,
+            build_mipmaps = True):
 
         super().__init__(
             ctx,
@@ -230,19 +215,17 @@ class LightModel(BaseModel):
     def create_vao(self):
         pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
         uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
-        #nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
         self.vao = self.ctx.vertex_array(
             self.program, [
-                (pos, '3f', 'a_position'),
-                (uv,  '2f', 'a_texture')
+                (pos, '3f', 'position'),
+                (uv,  '2f', 'texture_coord')
             ])
 
     def update(self, camera, lights=None):
         self.program['projection'].value = tuple(camera.projection.flatten())
-        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        #self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
+        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['scale'].value = tuple(self.scale.tolist())
 
 class EnviroMapModel(BaseModel):
@@ -251,17 +234,17 @@ class EnviroMapModel(BaseModel):
     '''
     def __init__(self,
             ctx: moderngl.Context,
-            position: tuple[float, float, float],
-            texture: str,
-            texture_format: str,
-            vertices: list[tuple[float, float, float]],
-            tex_coords: list[tuple[float, float]],
-            norm_coords: list[tuple[float, float, float]],
-            flip_texture: bool,
-            rotation: float = 0.0,
-            scale: float = 1.0,
-            from_filepath: bool = True,
-            build_mipmaps: bool = True):
+            position,
+            texture,
+            texture_format,
+            vertices,
+            tex_coords,
+            norm_coords,
+            flip_texture,
+            rotation = 0.0,
+            scale = 1.0,
+            from_filepath = True,
+            build_mipmaps = True):
 
         super().__init__(
             ctx,
@@ -282,23 +265,20 @@ class EnviroMapModel(BaseModel):
 
     def create_vao(self):
         pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
-        uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
         nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
         self.vao = self.ctx.vertex_array(
             self.program, [
-                (pos, '3f', 'a_position'),
-                (nor, '3f', 'a_normal')
+                (pos, '3f', 'position'),
+                (nor, '3f', 'normal')
             ])
 
     def update(self, camera, lights=None):
-
         self.program['projection'].value = tuple(camera.projection.flatten())
-        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['model'].value = tuple(self.pos_matrix.flatten())
-        self.program['angle'].value = tuple(self.rotation.tolist()[:-1])
+        self.program['view'].value = tuple(camera.get_view_matrix().flatten())
         self.program['scale'].value = tuple(self.scale.tolist())
-        self.program['viewpos'].value = tuple(camera.final_position.tolist())
+        self.program['view_position'].value = tuple(camera.position.tolist())
 
 
 class Skybox:
@@ -322,8 +302,6 @@ class Skybox:
 
         self.texture = texture
 
-        #self.texture.anisotropy = 4
-
         self.create_vao()
 
     def update(self, camera: Camera):
@@ -334,9 +312,7 @@ class Skybox:
         viewmatrix[3][1] = 0
         viewmatrix[3][2] = 0
         self.program['view'].value = tuple(viewmatrix.flatten())
-        #self.program['model'].value = tuple(pyrr.matrix44.create_from_translation(camera.position).flatten())#tuple(self.pos_matrix.flatten())
 
-        #self.program['viewpos'].value = tuple(camera.position.tolist())
 
     def render(self):
         self.texture.use()
@@ -344,24 +320,22 @@ class Skybox:
 
     def create_vao(self):
         pos = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
-        uv  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
-        nor = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
         self.vao = self.ctx.vertex_array(
             self.program, [
-                (pos, '3f', 'a_position'),
+                (pos, '3f', 'position'),
             ])
 
 def load_obj(
         ctx: moderngl.Context,
-        obj_filepath: Union[Path, str],
-        texture_filepath: Union[Path, str],
-        position: tuple[float, float, float],
-        rotation: float = 0.0,
-        scale: float = 1.0,
-        translation: float = 0.0,
-        texture_format: str = 'RGB',
-        flip_texture: bool = False,
+        obj_filepath,
+        texture_filepath,
+        position,
+        rotation = 0.0,
+        scale = 1.0,
+        translation = 0.0,
+        texture_format = 'RGB',
+        flip_texture = False,
         light_type = "",
         translate = False,
         rotate = False,

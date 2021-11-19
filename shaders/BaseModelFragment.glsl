@@ -1,65 +1,53 @@
 #version 330
 
+// In attributes.
 in vec2 v_texture;
 in vec3 v_normal;
-in vec3 FragPos;
+in vec3 frag_position;
 
-out vec4 out_color;
-
-uniform vec3 viewpos;
+// Uniforms.
+uniform vec3 view_position;
+uniform sampler2D s_texture;
 
 uniform int num_lights;
-uniform vec3 lightpos[40];
+uniform vec3 light_position[40];
 uniform vec3 color[40];
 uniform float ambient[40];
 uniform float diffuse[40];
 uniform float specular[40];
-uniform float specular_power[40];
 uniform vec3 attenuation[40];
 
-uniform sampler2D s_texture;
-uniform samplerCube skybox;
-uniform sampler2D shadowMap;
+// Out attributes.
+out vec4 out_color;
 
 void main() {
 
     // Ambient
-    vec3 totalLighting = ambient[0] * color[0];
+    vec3 total_lighting = ambient[0] * color[0];
 
     for (int i = 0; i < num_lights; i++)
     {
-
-        float distance = length(lightpos[i] - FragPos);
+        // Attenuation
+        float distance = length(light_position[i] - frag_position);
         float attenuation = 1.0 / (attenuation[i].x +
                                    attenuation[i].y * distance +
                                    attenuation[i].z * distance * distance);
-        
-        //float attenuation = 1.0 / (1 +
-                            //0.09 * distance +
-                            //0.032 * distance * distance); 
 
         // Diffuse
         vec3 norm = normalize(v_normal);
-        vec3 lightDir = normalize(lightpos[i] - FragPos);
+        vec3 lightDir = normalize(light_position[i] - frag_position);
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = diff * color[i] * diffuse[i] * attenuation;
-        
+
         // Specular
-        vec3 viewDir = normalize(viewpos - FragPos);
+        vec3 viewDir = normalize(view_position - frag_position);
         vec3 reflectDir = reflect(-lightDir, norm);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), specular_power[i]);
+        float spec = max(dot(viewDir, reflectDir), 0.0);
         vec3 specular = specular[i] * spec * color[i] * attenuation;
 
-        totalLighting = totalLighting + (texture(s_texture, v_texture).xyz * (diffuse + specular));
+        // Add to total lighting.
+        total_lighting += (texture(s_texture, v_texture).xyz * (diffuse + specular));
     }
 
-        // Reflection
-    vec3 I = normalize(FragPos - viewpos);
-    vec3 R = reflect(I, normalize(v_normal));
-    vec4 refl = vec4(texture(skybox, R).rgb, 1.0);
-
-    //vec3 result = texture(s_texture, v_texture).xyz * (ambient + diffuse + specular);
-    //out_color = vec4(totalLighting, 1.0) * refl;
-    
-    out_color = vec4(totalLighting, 1.0);
+    out_color = vec4(total_lighting, 1.0);
 }

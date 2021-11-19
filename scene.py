@@ -7,9 +7,9 @@ import numpy
 import pyrr
 import PIL.Image
 
-from model import Skybox, _compile_programs
+from model import Skybox, compile_shaders
 from light import LampPostLight, WindowLight, FloodLight
-from camera import FirstPersonController
+from camera import Camera
 
 def create_skybox(ctx, imageList, width, height):
 
@@ -45,13 +45,13 @@ class Scene:
         self.ctx.enable(moderngl.DEPTH_TEST | moderngl.CULL_FACE | moderngl.BLEND)
         self.ctx.multisample = True
 
-        self.camera = FirstPersonController(width / height)
+        self.camera = Camera(width / height)
         self.camera.noclip = True
 
         self.models = []
         self.lights = []
 
-        _compile_programs(self.ctx)
+        compile_shaders(self.ctx)
 
         self.skybox_day = create_skybox(self.ctx,
                                         ['assets/skybox/day/right.png',
@@ -91,7 +91,8 @@ class Scene:
     def draw(self):
         self.clock.tick(60)
 
-        self.camera.process(self)
+        self.camera.update_view()
+        self.camera.update_position(self)
 
         self.ctx.screen.use()
         self.ctx.screen.clear()
