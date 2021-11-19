@@ -1,13 +1,17 @@
-from model import load_obj
 from random import choices
 from math import radians
+
+from objparser import parse
+from model import Base_Model
+from light_model import Light_Model
+from dynamic_model import Dynamic_Model
+from enviro_map_model import Enviro_Map_Model
 
 map_edge = 24
 
 def load_models(ctx):
     models = []
-    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue,
-                  load_football_pitch]
+    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue, load_football_pitch]
 
     for loader in model_list:
         model = loader(ctx)
@@ -140,3 +144,61 @@ def load_football_pitch(ctx):
     football_pitch_items.append(load_obj(ctx, 'assets/models/floodLightLight.obj', 'assets/textures/white.png', (-21.2, 0, -14.95), 0, light_type='floodLight'))
 
     return football_pitch_items
+
+def load_obj(
+        ctx,
+        obj_filepath,
+        texture_filepath,
+        position,
+        rotation = 0.0,
+        scale = 1.0,
+        translation = 0.0,
+        light_type = "",
+        translate = False,
+        rotate = False,
+        mirror = False):
+
+    objfile = parse(obj_filepath)
+
+    if len(light_type) > 0:
+        return Light_Model(
+            ctx,
+            position,
+            light_type,
+            texture_filepath,
+            objfile.vertices,
+            objfile.uv_coords,
+            objfile.vertex_normals,
+            rotation,
+            scale)
+    elif translate or rotate:
+        return Dynamic_Model(
+            ctx,
+            position,
+            texture_filepath,
+            objfile.vertices,
+            objfile.uv_coords,
+            objfile.vertex_normals,
+            rotation,
+            scale,
+            translation)
+    elif mirror:
+        return Enviro_Map_Model(
+            ctx,
+            position,
+            texture_filepath,
+            objfile.vertices,
+            objfile.uv_coords,
+            objfile.vertex_normals,
+            rotation,
+            scale)
+    else:
+        return Base_Model(
+            ctx,
+            position,
+            texture_filepath,
+            objfile.vertices,
+            objfile.uv_coords,
+            objfile.vertex_normals,
+            rotation,
+            scale)

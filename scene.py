@@ -1,15 +1,11 @@
-import time
-import random
 import pygame
 import moderngl
-from numpy import pi
-import numpy
-import pyrr
 import PIL.Image
+import numpy as np
 
-from model import Skybox, compile_shaders
 from light import LampPostLight, WindowLight, FloodLight
 from camera import Camera
+from skybox import Skybox
 
 def create_skybox(ctx, imageList, width, height):
 
@@ -21,7 +17,7 @@ def create_skybox(ctx, imageList, width, height):
         
         dataList.append(list(image.getdata()))
 
-    image_data = numpy.array(dataList, numpy.uint8)
+    image_data = np.array(dataList, np.uint8)
 
     return Skybox(ctx, ctx.texture_cube((width, height), 4, image_data))
 
@@ -36,7 +32,6 @@ class Scene:
         self.window = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
         self.clock = pygame.time.Clock()
 
-        # These two lines creates a 'virtual mouse' so you can move it freely
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
         pygame.display.set_caption('Street Scene')
@@ -51,25 +46,23 @@ class Scene:
         self.models = []
         self.lights = []
 
-        compile_shaders(self.ctx)
+        self.skybox_day = Skybox(self.ctx,
+                                ['assets/skybox/day/right.png',
+                                'assets/skybox/day/left.png',
+                                'assets/skybox/day/top.png',
+                                'assets/skybox/day/bottom.png',
+                                'assets/skybox/day/back.png',
+                                'assets/skybox/day/front.png'],
+                                1024, 1024)
 
-        self.skybox_day = create_skybox(self.ctx,
-                                        ['assets/skybox/day/right.png',
-                                        'assets/skybox/day/left.png',
-                                        'assets/skybox/day/top.png',
-                                        'assets/skybox/day/bottom.png',
-                                        'assets/skybox/day/back.png',
-                                        'assets/skybox/day/front.png'],
-                                        1024, 1024)
-
-        self.skybox_night = create_skybox(self.ctx,
-                                        ['assets/skybox/night/right.png',
-                                        'assets/skybox/night/left.png',
-                                        'assets/skybox/night/top.png',
-                                        'assets/skybox/night/bottom.png',
-                                        'assets/skybox/night/back.png',
-                                        'assets/skybox/night/front.png'],
-                                        1024, 1024)
+        self.skybox_night = Skybox(self.ctx,
+                                    ['assets/skybox/night/right.png',
+                                    'assets/skybox/night/left.png',
+                                    'assets/skybox/night/top.png',
+                                    'assets/skybox/night/bottom.png',
+                                    'assets/skybox/night/back.png',
+                                    'assets/skybox/night/front.png'],
+                                    1024, 1024)
         self.skybox = 'night'
 
     def add_models(self, models):
@@ -80,7 +73,7 @@ class Scene:
 
     def add_lighting(self):
         for model in self.models:
-            if model.__class__.__name__ == 'LightModel':
+            if model.__class__.__name__ == 'Light_Model':
                 if model.light_type == 'lampPost':
                     self.lights.append(LampPostLight(model.position))
                 elif model.light_type == 'window':
@@ -111,7 +104,7 @@ class Scene:
         for model in self.models:
             model.update(self.camera, self.lights)
 
-            if model.__class__.__name__ == 'DynamicModel':
+            if model.__class__.__name__ == 'Dynamic_Model':
                 if model.translation > 0:
                     model.translate()
                 elif model.rotation[1] > 0:
