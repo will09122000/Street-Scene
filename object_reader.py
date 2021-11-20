@@ -1,15 +1,3 @@
-'''
-Converts OBJ (Wavefront) files to vertex, texture and
-normal coordinates.
-
-The parser currently doesn't examine material data.
-Only triangular faces are supported
-  (f v/vt/vn v/vt/vn v/vt/vn)
-'''
-
-from typing import Union
-
-from pathlib import Path
 import numpy as np
 
 from models.model import Base_Model
@@ -19,41 +7,32 @@ from models.enviro_map_model import Enviro_Map_Model
 
 class Obj_File:
     """
+    This class represents the contents of an obj file.
+
+    Attributes
+    ----------
+    object_name: string | The name of the object within the file.
+    model_coords: list  | The object file's geometric vertices.
+    tex_coords:    list | The object file's texture vertices.
+    norm_coords:   list | The object file's vertex normals.
     """
+
     def __init__(self,
-            object_name: str,
-            vert_coords: list[tuple[float, float, float]],
-            tex_coords: list[tuple[float, float, float]],
-            norm_coords: list[tuple[float, float, float]],
-            smooth_shading: bool):
+                 object_name,
+                 model_coords,
+                 tex_coords,
+                 norm_coords):
 
         self.object_name = object_name
-        self.vertices = vert_coords
+        self.vertices = model_coords
         self.uv_coords = tex_coords
         self.vertex_normals = norm_coords
-        self.smooth_shading = smooth_shading
-class Material:
-    def __init__(self, name=None, Ka=[1.,1.,1.], Kd=[1.,1.,1.], Ks=[1.,1.,1.], Ns=10.0, texture=None):
-        self.name = name
-        self.Ka = Ka
-        self.Kd = Kd
-        self.Ks = Ks
-        self.Ns = Ns
-        self.texture = texture
 
-class MaterialLibrary:
-    def __init__(self):
-        self.materials = []
-        self.names = {}
+def read_obj(filepath):
 
-    def add_material(self,material):
-        self.names[material.name] = len(self.materials)
-        self.materials.append(material)
-
-def read(filepath: Union[Path, str]) -> Obj_File:
     object_name = ''
 
-    vert_coords = []
+    model_coords = []
     tex_coords = []
     norm_coords = []
 
@@ -61,25 +40,28 @@ def read(filepath: Union[Path, str]) -> Obj_File:
     tex_indices = []
     norm_indices = []
 
-    smooth_shading = False
-
     with open(filepath, 'r') as f:
-
+        # Loop through each line in the file.
         for line in f.readlines():
             line = line.split()
             if (len(line) > 0):
+                # Object name.
                 if line[0] == 'o':
                     object_name = line[1]
 
+                # Object geometric vertices.
                 if line[0] == 'v':
-                    vert_coords.append((float(line[1]), float(line[2]), float(line[3])))
+                    model_coords.append((float(line[1]), float(line[2]), float(line[3])))
 
+                # Object texture vertices.
                 elif line[0] == 'vt':
                     tex_coords.append((float(line[1]), float(line[2])))
 
+                # Object vertex normals.
                 elif line[0] == 'vn':
                     norm_coords.append((float(line[1]), float(line[2]), float(line[3])))
 
+                # Object faces.
                 elif line[0] == 'f':
                     face = []
                     for v in line[1:]:
@@ -97,8 +79,9 @@ def read(filepath: Union[Path, str]) -> Obj_File:
                             vert_indices.append(int(indice[0])-1)
                             tex_indices.append(int(indice[1])-1)
                             norm_indices.append(int(indice[2])-1)
+
+                    # Converts quads into pairs of triangles.
                     elif len(face) == 4:
-                        # converts quads into pairs of triangles
                         face1 = [face[0], face[1], face[2]]
                         for indice in face1:
                             vert_indices.append(int(indice[0])-1)
@@ -111,31 +94,22 @@ def read(filepath: Union[Path, str]) -> Obj_File:
                             tex_indices.append(int(indice[1])-1)
                             norm_indices.append(int(indice[2])-1)
 
-                elif line[0] == 's':
-                    if line[1] in ('on', '1'):
-                        smooth_shading = True
-                    else:
-                        smooth_shading = False
-   
-    final_vert = []
-    final_tex = []
-    final_norm = []
+    all_vertex_coords = []
+    all_tex_coords = []
+    all_norm_coords = []
 
     for i in vert_indices:
-        final_vert.append(vert_coords[i])
+        all_vertex_coords.append(model_coords[i])
+    for i in tex_indices:
+        all_tex_coords.append(tex_coords[i])
+    for i in norm_indices:
+        all_norm_coords.append(norm_coords[i])
 
-    for j in tex_indices:
-        final_tex.append(tex_coords[j])
+    all_vertex_coords = list(np.concatenate(all_vertex_coords).flat)
+    all_tex_coords = list(np.concatenate(all_tex_coords).flat)
+    all_norm_coords = list(np.concatenate(all_norm_coords).flat)
 
-    for k in norm_indices:
-        final_norm.append(norm_coords[k])
-
-
-    final_vert = list(np.concatenate(final_vert).flat)
-    final_tex = list(np.concatenate(final_tex).flat)
-    final_norm = list(np.concatenate(final_norm).flat)
-
-    return Obj_File(object_name, final_vert, final_tex, final_norm, smooth_shading)
+    return Obj_File(object_name, all_vertex_coords, all_tex_coords, all_norm_coords)
 
 def load_obj(ctx,
              obj_file,
@@ -144,12 +118,13 @@ def load_obj(ctx,
              rotation    = 0.0,
              scale       = 1.0,
              translation = [0.0, 0.0, 0.0],
-             light_type  = "",
+             light_type  = '',
              translate   = False,
              rotate      = False,
              mirror      = False):
+    """Loads object file contents into a specific model type."""
 
-    if len(light_type) > 0:
+    if light_type:
         return Light_Model(ctx,
                            position,
                            light_type,

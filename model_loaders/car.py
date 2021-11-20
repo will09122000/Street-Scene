@@ -1,7 +1,7 @@
 from random import choices
 from math import radians
 
-from object_reader import read, load_obj
+from object_reader import read_obj, load_obj
 
 def load_cars(ctx):
     """Loads both moving and stationary cars."""
@@ -14,7 +14,7 @@ def load_cars(ctx):
     car_types = []
     # Load the 3 car objects.
     for i in range(0, 3):
-        car_types.append(read(f'assets/models/car{i}.obj'))
+        car_types.append(read_obj(f'assets/models/car{i}.obj'))
 
     # Moving cars
     cars.append(load_obj(ctx              = ctx,

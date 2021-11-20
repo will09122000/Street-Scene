@@ -1,6 +1,6 @@
 from math import radians
 
-from object_reader import read, load_obj
+from object_reader import read_obj, load_obj
 
 from model_loaders.car import load_cars
 from model_loaders.tree import load_trees
@@ -19,6 +19,6 @@ def load_models(ctx):
         model = loader(ctx)
         models.extend(model)
 
-    models.append(load_obj(ctx, read('assets/models/mgr.obj'), 'assets/textures/mgr.png', (10, 0, -10), radians(1), 1, rotate=True))
+    models.append(load_obj(ctx, read_obj('assets/models/mgr.obj'), 'assets/textures/mgr.png', (10, 0, -10), radians(1), 1, rotate=True))
 
     return models

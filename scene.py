@@ -1,28 +1,19 @@
 import pygame
 import moderngl
-import PIL.Image
-import numpy as np
 
 from light import LampPostLight, WindowLight, FloodLight
 from camera import Camera
 from models.skybox import Skybox
 
-def create_skybox(ctx, imageList, width, height):
-
-    dataList = []
-    for filename in imageList:
-        image = PIL.Image.open(filename)
-        if width != image.size[0] or height != image.size[1]:
-            raise ValueError(f"image size mismatch: {image.size[0]}x{image.size[1]}")
-        
-        dataList.append(list(image.getdata()))
-
-    image_data = np.array(dataList, np.uint8)
-
-    return Skybox(ctx, ctx.texture_cube((width, height), 4, image_data))
-
-
 class Scene:
+    """
+    This is the main class for drawing the OpenGL street scene.
+
+    Attributes
+    ----------
+    width: int  | The display width in pixels.
+    height: int | The display height in pixels.
+    """
     def __init__(self, width, height):
 
         pygame.init()
@@ -32,46 +23,53 @@ class Scene:
         self.window = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
         self.clock = pygame.time.Clock()
 
+        # Disables the cursor.
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
+
         pygame.display.set_caption('Street Scene')
 
+        # Creates ModernGL context.
         self.ctx = moderngl.create_context()
         self.ctx.enable(moderngl.DEPTH_TEST | moderngl.CULL_FACE | moderngl.BLEND)
         self.ctx.multisample = True
 
+        # Initialise the scene's camera to view the scene.
         self.camera = Camera(width / height)
         self.camera.noclip = True
 
         self.models = []
         self.lights = []
 
-        self.skybox_day = Skybox(self.ctx,
-                                ['assets/skybox/day/right.png',
-                                'assets/skybox/day/left.png',
-                                'assets/skybox/day/top.png',
-                                'assets/skybox/day/bottom.png',
-                                'assets/skybox/day/back.png',
-                                'assets/skybox/day/front.png'],
-                                1024, 1024)
+        # Creates day and night skyboxes.
+        self.skybox_day = Skybox(self.ctx, 1024, 1024,
+                                 ['assets/skybox/day/right.png',
+                                 'assets/skybox/day/left.png',
+                                 'assets/skybox/day/top.png',
+                                 'assets/skybox/day/bottom.png',
+                                 'assets/skybox/day/back.png',
+                                 'assets/skybox/day/front.png'])
 
-        self.skybox_night = Skybox(self.ctx,
-                                    ['assets/skybox/night/right.png',
-                                    'assets/skybox/night/left.png',
-                                    'assets/skybox/night/top.png',
-                                    'assets/skybox/night/bottom.png',
-                                    'assets/skybox/night/back.png',
-                                    'assets/skybox/night/front.png'],
-                                    1024, 1024)
+        self.skybox_night = Skybox(self.ctx, 1024, 1024,
+                                   ['assets/skybox/night/right.png',
+                                   'assets/skybox/night/left.png',
+                                   'assets/skybox/night/top.png',
+                                   'assets/skybox/night/bottom.png',
+                                   'assets/skybox/night/back.png',
+                                   'assets/skybox/night/front.png'])
         self.skybox = 'night'
 
     def add_models(self, models):
+        """Adds models to the scene."""
+
         self.models = models
 
         for model in models:
             model.rotate()
 
     def add_lighting(self):
+        """Adds lighting in the same position as light models."""
+
         for model in self.models:
             if model.__class__.__name__ == 'Light_Model':
                 if model.light_type == 'lampPost':
@@ -82,14 +80,19 @@ class Scene:
                     self.lights.append(FloodLight(model.position))
 
     def draw(self):
+        """Draws the scene."""
+
         self.clock.tick(60)
 
+        # Updates the camera's view and position controlled by user inputs.
         self.camera.update_view()
         self.camera.update_position(self)
 
+        # Clear the screen.
         self.ctx.screen.use()
         self.ctx.screen.clear()
 
+        # Draw the skybox.
         self.ctx.disable(moderngl.DEPTH_TEST)
         self.ctx.front_face = 'cw'
         if self.skybox == 'night':
@@ -101,6 +104,7 @@ class Scene:
         self.ctx.front_face = 'ccw'
         self.ctx.enable(moderngl.DEPTH_TEST)
 
+        # Update the position of dynamic models and render each model.
         for model in self.models:
             model.update(self.camera, self.lights)
 
@@ -115,12 +119,10 @@ class Scene:
         pygame.display.flip()
 
     def run(self):
-        '''
-        Draws the scene in a loop until exit.
-        '''
-        # We have a classic program loop
+        """Draws the scene in a loop until exit."""
+
         self.running = True
 
+        # Keep drawing the scene while running is true.
         while self.running:
-            # otherwise, continue drawing
             self.draw()

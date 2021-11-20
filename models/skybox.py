@@ -3,7 +3,7 @@ import struct
 import PIL.Image
 import numpy as np
 
-from object_reader import read
+from object_reader import read_obj
 
 class Skybox:
     """
@@ -21,10 +21,10 @@ class Skybox:
     vao: moderngl.context.vertex_array | An array to store all of the values input to the vertex
                                          shader.
     """
-    def __init__(self, ctx, imageList, width, height):
+    def __init__(self, ctx, width, height, image_list):
         self.ctx = ctx
 
-        obj_file = read('assets/models/cube.obj')
+        obj_file = read_obj('assets/models/cube.obj')
 
         self.shader = ctx.program(vertex_shader = open('shaders/Skybox_Vertex.glsl').read(),
                                   fragment_shader = open('shaders/Skybox_Fragment.glsl').read())
@@ -35,7 +35,7 @@ class Skybox:
 
         self.position_matrix = pyrr.matrix44.create_from_translation(pyrr.Vector3([0.0, 0.0, 0.0]))
 
-        self.texture = self.create_skybox(imageList, width, height)
+        self.texture = self.create_skybox(image_list, width, height)
 
         # Creates VAO
         position = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))

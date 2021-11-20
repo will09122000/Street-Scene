@@ -1,16 +1,16 @@
 from math import radians
 import numpy as np
 
-from object_reader import read, load_obj
+from object_reader import read_obj, load_obj
 
 def load_football_pitch(ctx):
     """Loads football goals and floodlights in one corner of the map."""
 
     football_pitch_items = []
 
-    goal_obj = read('assets/models/goal.obj')
-    floodLight_obj = read('assets/models/floodLight.obj')
-    floodLightLight_obj = read('assets/models/floodLightLight.obj')
+    goal_obj = read_obj('assets/models/goal.obj')
+    floodLight_obj = read_obj('assets/models/floodLight.obj')
+    floodLightLight_obj = read_obj('assets/models/floodLightLight.obj')
 
     # Football goals
     football_pitch_items.append(load_obj(ctx              = ctx,
