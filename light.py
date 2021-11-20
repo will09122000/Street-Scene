@@ -15,12 +15,12 @@ class Light:
     """
 
     def __init__(self,
-                position,
-                color,
-                ambient,
-                diffuse,
-                specular,
-                attenuation):
+                 position,
+                 color,
+                 ambient,
+                 diffuse,
+                 specular,
+                 attenuation):
 
         self.position = Vector3(position)
         self.color = color
@@ -34,12 +34,12 @@ class LampPostLight(Light):
     An orange light to emit from the top of the lamp post.
     """
     def __init__(self,
-                position,
-                color       = (1.0, 0.73, 0.0),
-                ambient     = 0.0,
-                diffuse     = 0.5,
-                specular    = 0.2,
-                attenuation = (0.5, 0.1, 0.05)):
+                 position,
+                 color       = (1.0, 0.73, 0.0),
+                 ambient     = 0.0,
+                 diffuse     = 0.5,
+                 specular    = 0.2,
+                 attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(
             position,
@@ -54,37 +54,35 @@ class WindowLight(Light):
     A white light emitting from a house window.
     """
     def __init__(self,
-                position,
-                color       = (0.2, 0.2, 0.2),
-                ambient     = 0.0,
-                diffuse     = 0.5,
-                specular    = 0.2,
-                attenuation = (0.5, 0.1, 0.05)):
+                 position,
+                 color       = (0.2, 0.2, 0.2),
+                 ambient     = 0.0,
+                 diffuse     = 0.5,
+                 specular    = 0.2,
+                 attenuation = (0.5, 0.1, 0.05)):
 
-        super().__init__(
-            position,
-            color,
-            ambient,
-            diffuse,
-            specular,
-            attenuation)
+        super().__init__(position,
+                         color,
+                         ambient,
+                         diffuse,
+                         specular,
+                         attenuation)
 
 class FloodLight(Light):
     """
     An orange light to emit from the top of the football pitch floodlight.
     """
     def __init__(self,
-                position,
-                color       = (1.0, 1.0, 1.0),
-                ambient     = 0.0,
-                diffuse     = 0.5,
-                specular    = 0.2,
-                attenuation = (0.5, 0.1, 0.05)):
+                 position,
+                 color       = (1.0, 1.0, 1.0),
+                 ambient     = 0.0,
+                 diffuse     = 0.5,
+                 specular    = 0.2,
+                 attenuation = (0.5, 0.1, 0.05)):
 
-        super().__init__(
-            position,
-            color,
-            ambient,
-            diffuse,
-            specular,
-            attenuation)
+        super().__init__(position,
+                         color,
+                         ambient,
+                         diffuse,
+                         specular,
+                         attenuation)

@@ -8,13 +8,13 @@ class Camera:
 
     Attributes
     ----------
-    movement_sensitivity : float | Defines how sensitive WASD key press movements are terms of the
+    movement_sensitivity:  float | Defines how sensitive WASD key press movements are terms of the
                                    camera's velocity.
-    mouse_sensitivity :    float | Defines how sensitive mouse movements in terms of the camera's
+    mouse_sensitivity:     float | Defines how sensitive mouse movements in terms of the camera's
                                    projection.
-    aspect_ratio :         float | Aspect Ratio of the window (screen width / screen height).
-    fov :                  float | Field of view of the camera.
-    position :      pyrr.Vector3 | The current position of the camera as a 3D vector.
+    aspect_ratio:          float | Aspect Ratio of the window (screen width / screen height).
+    fov:                   float | Field of view of the camera.
+    position:       pyrr.Vector3 | The current position of the camera as a 3D vector.
     projection:      numpy.array | The perspective projection matrix of the camera.
     front:          pyrr.Vector3 | A 3D vector representing forward and backward directions.
     side:           pyrr.Vector3 | A 3D vector representing left and right directions.

@@ -12,6 +12,11 @@ from typing import Union
 from pathlib import Path
 import numpy as np
 
+from model import Base_Model
+from light_model import Light_Model
+from dynamic_model import Dynamic_Model
+from enviro_map_model import Enviro_Map_Model
+
 
 class ObjFile:
     def __init__(self,
@@ -169,3 +174,54 @@ def load_material_library(file_name):
     print('- Done, loaded {} materials'.format(len(library.materials)))
 
     return library
+
+def load_obj(ctx,
+             obj_file,
+             texture_filepath,
+             position,
+             rotation    = 0.0,
+             scale       = 1.0,
+             translation = [0.0, 0.0, 0.0],
+             light_type  = "",
+             translate   = False,
+             rotate      = False,
+             mirror      = False):
+
+    if len(light_type) > 0:
+        return Light_Model(ctx,
+                           position,
+                           light_type,
+                           texture_filepath,
+                           obj_file.vertices,
+                           obj_file.uv_coords,
+                           obj_file.vertex_normals,
+                           rotation,
+                           scale)
+    elif translate or rotate:
+        return Dynamic_Model(ctx,
+                             position,
+                             texture_filepath,
+                             obj_file.vertices,
+                             obj_file.uv_coords,
+                             obj_file.vertex_normals,
+                             rotation,
+                             scale,
+                             translation)
+    elif mirror:
+        return Enviro_Map_Model(ctx,
+                                position,
+                                texture_filepath,
+                                obj_file.vertices,
+                                obj_file.uv_coords,
+                                obj_file.vertex_normals,
+                                rotation,
+                                scale)
+    else:
+        return Base_Model(ctx,
+                          position,
+                          texture_filepath,
+                          obj_file.vertices,
+                          obj_file.uv_coords,
+                          obj_file.vertex_normals,
+                          rotation,
+                          scale)

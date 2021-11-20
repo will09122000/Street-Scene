@@ -105,7 +105,7 @@ class Scene:
             model.update(self.camera, self.lights)
 
             if model.__class__.__name__ == 'Dynamic_Model':
-                if model.translation > 0:
+                if sum(model.translation) > 0:
                     model.translate()
                 elif model.rotation[1] > 0:
                     model.rotate()
