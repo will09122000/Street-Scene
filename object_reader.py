@@ -12,13 +12,14 @@ from typing import Union
 from pathlib import Path
 import numpy as np
 
-from model import Base_Model
-from light_model import Light_Model
-from dynamic_model import Dynamic_Model
-from enviro_map_model import Enviro_Map_Model
+from models.model import Base_Model
+from models.light_model import Light_Model
+from models.dynamic_model import Dynamic_Model
+from models.enviro_map_model import Enviro_Map_Model
 
-
-class ObjFile:
+class Obj_File:
+    """
+    """
     def __init__(self,
             object_name: str,
             vert_coords: list[tuple[float, float, float]],
@@ -49,7 +50,7 @@ class MaterialLibrary:
         self.names[material.name] = len(self.materials)
         self.materials.append(material)
 
-def parse(filepath: Union[Path, str]) -> ObjFile:
+def read(filepath: Union[Path, str]) -> Obj_File:
     object_name = ''
 
     vert_coords = []
@@ -134,46 +135,7 @@ def parse(filepath: Union[Path, str]) -> ObjFile:
     final_tex = list(np.concatenate(final_tex).flat)
     final_norm = list(np.concatenate(final_norm).flat)
 
-    return ObjFile(object_name, final_vert, final_tex, final_norm, smooth_shading)
-
-def load_material_library(file_name):
-    library = MaterialLibrary()
-    material = None
-
-    print('-- Loading material library {}'.format(file_name))
-
-    mtlfile = open(file_name)
-    for line in mtlfile:
-        fields = line.split()
-        if len(fields) != 0:
-            if fields[0] == 'newmtl':
-                if material is not None:
-                    library.add_material(material)
-
-                material = Material(fields[1])
-                print('Found material definition: {}'.format(material.name))
-            elif fields[0] == 'Ka':
-                material.Ka = np.array(fields[1:], 'f')
-            elif fields[0] == 'Kd':
-                material.Kd = np.array(fields[1:], 'f')
-            elif fields[0] == 'Ks':
-                material.Ks = np.array(fields[1:], 'f')
-            elif fields[0] == 'Ns':
-                material.Ns = float(fields[1])
-            elif fields[0] == 'd':
-                material.d = float(fields[1])
-            elif fields[0] == 'Tr':
-                material.d = 1.0 - float(fields[1])
-            elif fields[0] == 'illum':
-                material.illumination = int(fields[1])
-            elif fields[0] == 'map_Kd':
-                material.texture = fields[1]
-
-    library.add_material(material)
-
-    print('- Done, loaded {} materials'.format(len(library.materials)))
-
-    return library
+    return Obj_File(object_name, final_vert, final_tex, final_norm, smooth_shading)
 
 def load_obj(ctx,
              obj_file,

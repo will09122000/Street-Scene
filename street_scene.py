@@ -11,6 +11,7 @@ if __name__ == '__main__':
     print('Loading Models')
     scene.add_models(load_models(scene.ctx))
 
+    # Load the scene's lighting.
     print('Adding Lighting')
     scene.add_lighting()
 

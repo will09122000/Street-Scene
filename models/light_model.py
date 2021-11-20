@@ -1,24 +1,13 @@
 import struct
 
-from model import Base_Model
+from models.model import Base_Model
 
 class Light_Model(Base_Model):
     """
     A class to represent a model that is not affected by any light source. Used in conjunction
     with a light object to give the appearance of a light.
 
-    Attributes
-    ----------
-    ctx:  moderngl.context | The ModernGL context exposing OpenGL features.
-    position:        tuple | The starting position (XYZ) of the dynamic model in the scene.
-    texture:        string | The filepath to the texture image for this model.
-    vertices:         list | The model's geometric vertices.
-    tex_coords:       list | The model's texture vertices.
-    norm_coords:      list | The model's vertex normals.
-    rotation:        float | The angle in radians at which the model should be rotated about the
-                             Y-axis (Single float as there is no model that needs to be rotated
-                             about another axis). 
-    scale:           float | The scale at which the model is drawn comparted to the original model.
+    No additional attributes from Base_Model.
     """
     def __init__(self,
                  ctx,
@@ -53,8 +42,9 @@ class Light_Model(Base_Model):
                                                        (texture_coords,  '2f', 'texture_coord')])
 
     def update(self, camera, lights=None):
+        """Updates vertex shader uniforms."""
+
         self.shader['projection'].value = tuple(camera.projection.flatten())
         self.shader['model'].value      = tuple(self.position_matrix.flatten())
         self.shader['view'].value       = tuple(camera.get_view_matrix().flatten())
         self.shader['scale'].value      = tuple(self.scale.tolist())
-

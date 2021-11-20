@@ -1,16 +1,16 @@
 import numpy as np
 
-from objparser import parse, load_obj
+from object_reader import read, load_obj
 
 def load_terraces(ctx):
     """Load the terrace housing including the fences, chimneys and windows."""
 
     terraces = []
 
-    terrace_obj = parse('assets/models/terrace.obj')
-    terrace_fence_obj = parse('assets/models/terrace_fence.obj')
-    chimney_obj = parse('assets/models/chimney.obj')
-    window_obj = parse('assets/models/window.obj')
+    terrace_obj = read('assets/models/terrace.obj')
+    terrace_fence_obj = read('assets/models/terrace_fence.obj')
+    chimney_obj = read('assets/models/chimney.obj')
+    window_obj = read('assets/models/window.obj')
 
     for i in range(0, -60, -30):
         terraces.append(load_obj(ctx              = ctx,

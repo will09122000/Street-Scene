@@ -5,7 +5,7 @@ import numpy as np
 
 from light import LampPostLight, WindowLight, FloodLight
 from camera import Camera
-from skybox import Skybox
+from models.skybox import Skybox
 
 def create_skybox(ctx, imageList, width, height):
 

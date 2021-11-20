@@ -1,6 +1,6 @@
 from math import radians
 
-from objparser import parse, load_obj
+from object_reader import read, load_obj
 
 def load_lamp_posts(ctx):
     """Loads lamp posts and lamp post lights on the edge of the pavement."""
@@ -8,8 +8,8 @@ def load_lamp_posts(ctx):
     x_spacer = 5
     y_spacer = 8
 
-    lamp_post_obj = parse('assets/models/lampPost.obj')
-    lamp_post_light_obj = parse('assets/models/lampPostLight.obj')
+    lamp_post_obj = read('assets/models/lampPost.obj')
+    lamp_post_light_obj = read('assets/models/lampPostLight.obj')
 
     for i in range(0, 2):
         for j in range(-24, 32, y_spacer):

@@ -1,25 +1,17 @@
 import pyrr
 import numpy as np
 
-from model import Base_Model
+from models.model import Base_Model
 
 class Dynamic_Model(Base_Model):
     """
     A class to represent a model that either rotates or transforms while the scene is running.
 
-    Attributes
+    Additional attributes from Base_Model
     ----------
-    ctx:  moderngl.context | The ModernGL context exposing OpenGL features.
-    position:        tuple | The starting position (XYZ) of the dynamic model in the scene.
-    texture:        string | The filepath to the texture image for this model.
-    vertices:         list | The model's geometric vertices.
-    tex_coords:       list | The model's texture vertices.
-    norm_coords:      list | The model's vertex normals.
-    rotation:        float | The angle in radians at which the model should be rotated about the
-                             Y-axis (Single float as there is no model that needs to be rotated
-                             about another axis). 
-    scale:           float | The scale at which the model is drawn comparted to the original model.
-    translation      tuple | The speed at which models are translated in each dimension.
+    translation: tuple | The speed at which models are translated in each dimension.
+    map_edge:      int | The edge of the floor plane to reset cars when they move off the
+                         edge of the map.
     """
     def __init__(self,
                  ctx,
@@ -57,3 +49,8 @@ class Dynamic_Model(Base_Model):
             # Translate object by the translate tuple provided.
             translation_matrix = pyrr.matrix44.create_from_translation([-self.translation[0], -self.translation[1], -self.translation[2]])
             self.position_matrix = pyrr.matrix44.multiply(translation_matrix, self.position_matrix)
+
+    def rotate(self):
+        """Rotate the model."""
+        rotation_matrix = pyrr.matrix44.create_from_y_rotation(self.rotation[1])
+        self.position_matrix = pyrr.matrix44.multiply(rotation_matrix, self.position_matrix)

@@ -1,4 +1,4 @@
-from objparser import parse, load_obj
+from object_reader import read, load_obj
 
 def load_trees(ctx):
     """Load tree objects that are placed on the pavement."""
@@ -7,7 +7,7 @@ def load_trees(ctx):
     x_spacer = 3.75
     y_spacer = 8
 
-    tree_obj = parse('assets/models/tree.obj')
+    tree_obj = read('assets/models/tree.obj')
 
     repeat = False
     for _ in range(0, 2):
