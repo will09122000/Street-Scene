@@ -37,14 +37,14 @@ def load_football_pitch(ctx):
         football_pitch_items.append(load_obj(ctx              = ctx,
                                              obj_file         = floodLightLight_obj,
                                              texture_filepath = 'assets/textures/white.png',
-                                             position         = (i, 0, -15.845),
+                                             position         = (i, -0.01, -15.845),
                                              rotation         = 0,
                                              light_type       = 'floodLight'))
 
         football_pitch_items.append(load_obj(ctx              = ctx,
                                              obj_file         = floodLightLight_obj,
                                              texture_filepath = 'assets/textures/white.png',
-                                             position         = (i, 0, -14.95),
+                                             position         = (i, -0.01, -14.95),
                                              rotation         = 0,
                                              light_type       = 'floodLight'))
 
