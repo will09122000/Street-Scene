@@ -1,4 +1,5 @@
 from math import radians
+from model_loaders.traffic_light import load_traffic_lights
 
 from object_reader import read_obj, load_obj
 
@@ -13,7 +14,8 @@ def load_models(ctx):
     """Loads all models into a single model list."""
 
     models = []
-    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue, load_football_pitch]
+    model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue,
+                  load_football_pitch, load_traffic_lights]
 
     for loader in model_list:
         model = loader(ctx)

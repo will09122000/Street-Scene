@@ -13,6 +13,10 @@ def load_terraces(ctx):
     chimney_obj = read_obj('assets/models/chimney.obj')
     window_obj = read_obj('assets/models/window.obj')
 
+    # 3 different colours possible, 9 cars total.
+    light_on = shuffle([True] * 6 + [False] * 12)
+    print(light_on)
+
     for i in range(0, -60, -30):
         terraces.append(load_obj(ctx              = ctx,
                                  obj_file         = terrace_obj,
@@ -29,41 +33,27 @@ def load_terraces(ctx):
                                      texture_filepath = 'assets/textures/chimney.png',
                                      position         = (j+i, 0, 9.5)))
 
-        # Half the windows will will emit light, the other half will not.
-        light_on = [True] * 12 + [False] * 12
-        # Shuffle the order so random windows emit light.
-        shuffle(light_on)
         light_index = 0
-
         for j in np.arange(7.52, 12.48, 4.96):
             for k in np.arange(0, 10.3, 5.1):
                 terraces.append(load_obj(ctx              = ctx,
                                          obj_file         = window_obj,
-                                         texture_filepath = 'assets/textures/{}.png'
-                                                            .format('white' if light_on[light_index] else 'grey'),
+                                         texture_filepath = 'assets/textures/{}.png'.format('white' if light_on[light_index] else 'grey'),
                                          position         = (i+k+8.5, 0.75, j),
                                          light_type       = 'window' if light_on[light_index] else None))
                 light_index += 1
                 terraces.append(load_obj(ctx              = ctx,
                                          obj_file         = window_obj,
-                                         texture_filepath = 'assets/textures/{}.png'
-                                                            .format('white' if light_on[light_index] else 'grey'),
-                                         position         = (i+k+11.2, 0.75, j),
-                                         light_type       = 'window' if light_on[light_index] else None))
+                                         texture_filepath = 'assets/textures/{}.png'.format('white' if light_on[light_index] else 'grey'),
+                                         position         = 'window' if light_on[light_index] else None))
                 light_index += 1
                 terraces.append(load_obj(ctx              = ctx,
                                          obj_file         = window_obj,
-                                         texture_filepath = 'assets/textures/{}.png'
-                                                            .format('white' if light_on[light_index] else 'grey'),
-                                         position         = (i+k+8.5, 2.25, j),
-                                         light_type       = 'window' if light_on[light_index] else None))
+                                         texture_filepath = 'assets/textures/{}.png'.format('white' if light_on[light_index] else 'grey'),
+                                         position         = 'window' if light_on[light_index] else None))
                 light_index += 1
                 terraces.append(load_obj(ctx              = ctx,
                                          obj_file         = window_obj,
-                                         texture_filepath = 'assets/textures/{}.png'
-                                                            .format('white' if light_on[light_index] else 'grey'),
-                                         position         = (i+k+11.2, 2.25, j),
-                                         light_type       = 'window' if light_on[light_index] else None))
-                light_index += 1
-
+                                         texture_filepath = 'assets/textures/{}.png'.format('white' if light_on[light_index] else 'grey'),
+                                         position         = 'window' if light_on[light_index] else None))
     return terraces
