@@ -1,7 +1,7 @@
 import pygame
 import moderngl
 
-from light import LampPostLight, WindowLight, FloodLight
+from light import LampPostLight, WindowLight, FloodLight, GreenLight, RedLight
 from camera import Camera
 from models.skybox import Skybox
 
@@ -78,6 +78,10 @@ class Scene:
                     self.lights.append(WindowLight(model.position))
                 elif model.light_type == 'floodLight':
                     self.lights.append(FloodLight(model.position))
+                elif model.light_type == 'greenLight':
+                    self.lights.append(GreenLight(model.position))
+                elif model.light_type == 'redLight':
+                    self.lights.append(RedLight(model.position))
 
     def draw(self):
         """Draws the scene."""

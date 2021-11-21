@@ -86,3 +86,41 @@ class FloodLight(Light):
                          diffuse,
                          specular,
                          attenuation)
+
+class GreenLight(Light):
+    """
+
+    """
+    def __init__(self,
+                 position,
+                 color       = (0.2, 0.65, 0.2),
+                 ambient     = 0.0,
+                 diffuse     = 0.5,
+                 specular    = 0.2,
+                 attenuation = (0.5, 0.1, 0.05)):
+
+        super().__init__(position,
+                         color,
+                         ambient,
+                         diffuse,
+                         specular,
+                         attenuation)
+
+class RedLight(Light):
+    """
+
+    """
+    def __init__(self,
+                 position,
+                 color       = (0.73, 0.12, 0.06),
+                 ambient     = 0.0,
+                 diffuse     = 0.5,
+                 specular    = 0.2,
+                 attenuation = (0.5, 0.1, 0.05)):
+
+        super().__init__(position,
+                         color,
+                         ambient,
+                         diffuse,
+                         specular,
+                         attenuation)
