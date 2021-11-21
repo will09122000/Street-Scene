@@ -62,8 +62,8 @@ class Camera:
         self.pitch -= y_movement * self.mouse_sensitivity
 
         # Prevents the camera from looking past vertically up and down.
-        if self.pitch > 90: self.pitch = 90
-        if self.pitch < -90: self.pitch = -90
+        if self.pitch > 89: self.pitch = 89
+        if self.pitch < -89: self.pitch = -89
 
         x = cos(radians(self.yaw)) * cos(radians(self.pitch))
         y = sin(radians(self.pitch))

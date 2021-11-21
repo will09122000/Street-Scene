@@ -15,7 +15,7 @@ def load_statue(ctx):
     return [load_obj(ctx = ctx,
                      obj_file = read_obj('assets/models/statue.obj'),
                      texture_filepath = 'assets/textures/white.png',
-                     position = (15, 0, -15),
+                     position = (20, 0, -20),
                      rotation = 0,
                      scale = 15,
                      mirror = True)]
