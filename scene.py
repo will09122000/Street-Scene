@@ -11,8 +11,11 @@ class Scene:
 
     Attributes
     ----------
-    width: int  | The display width in pixels.
-    height: int | The display height in pixels.
+    window: pygame.Surface   | Creates an OpenGL-renderable display with double-buffering.
+    ctx: moderngl.context    | The ModernGL context exposing OpenGL features.
+    camera: Camera           | Creates a camera object from camera.py
+    models: list             | A list of models to be drawn.
+    lights: list             | A list of lights to be added to the scene.
     """
     def __init__(self, width, height):
 
@@ -21,13 +24,12 @@ class Scene:
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 8)
 
         self.window = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
-        self.clock = pygame.time.Clock()
+        pygame.display.set_caption('Street Scene')
 
         # Disables the cursor.
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
 
-        pygame.display.set_caption('Street Scene')
 
         # Creates ModernGL context.
         self.ctx = moderngl.create_context()
@@ -97,9 +99,7 @@ class Scene:
     def draw(self):
         """Draws the scene."""
 
-        self.clock.tick(60)
-
-        # Updates the camera's view and position controlled by user inputs.
+        # Update the camera's view and position controlled by user inputs.
         self.camera.update_view()
         self.camera.update_position(self)
 

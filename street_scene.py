@@ -1,5 +1,5 @@
 from scene import Scene
-from model_loaders.model_loader import load_models
+from model_loader import load_models
 
 if __name__ == '__main__':
 

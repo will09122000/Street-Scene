@@ -8,7 +8,7 @@ def load_park(ctx):
 
     park_objects = []
 
-    # Fence
+    # Fence surrounding the park
     park_objects.append(load_obj(ctx              = ctx,
                                  obj_file         = read_obj('assets/models/parkFence.obj'),
                                  texture_filepath = 'assets/textures/terrace_fence.png',

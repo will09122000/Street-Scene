@@ -38,7 +38,7 @@ def load_terraces(ctx):
         light_index = 0
 
         # Terrace windows
-        for j in np.arange(7.52, 12.48, 4.96):
+        for j in np.arange(7.51, 12.5, 4.975):
             for k in np.arange(0, 10.3, 5.1):
                 terraces.append(load_obj(ctx              = ctx,
                                          obj_file         = window_obj,
