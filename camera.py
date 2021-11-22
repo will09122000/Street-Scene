@@ -25,8 +25,8 @@ class Camera:
                  aspect_ratio,
                  fov                  = 90.0,
                  start_position       = (0.0, 5.0, 0.0),
-                 movement_sensitivity = 0.1,
-                 mouse_sensitivity    = 0.17):
+                 movement_sensitivity = 0.2,
+                 mouse_sensitivity    = 0.15):
 
         self.movement_sensitivity = movement_sensitivity
         self.mouse_sensitivity = mouse_sensitivity

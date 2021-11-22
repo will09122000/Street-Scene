@@ -41,31 +41,40 @@ class Scene:
         self.models = []
         self.lights = []
 
-        # Creates day and night skyboxes.
+        print('Initialised Scene')
+
+    def add_skyboxes(self):
+        """Creates day and night skyboxes."""
+
         self.skybox_day = Skybox(self.ctx, 1024, 1024,
                                  ['assets/skybox/day/right.png',
-                                 'assets/skybox/day/left.png',
-                                 'assets/skybox/day/top.png',
-                                 'assets/skybox/day/bottom.png',
-                                 'assets/skybox/day/back.png',
-                                 'assets/skybox/day/front.png'])
+                                  'assets/skybox/day/left.png',
+                                  'assets/skybox/day/top.png',
+                                  'assets/skybox/day/bottom.png',
+                                  'assets/skybox/day/back.png',
+                                  'assets/skybox/day/front.png'])
 
         self.skybox_night = Skybox(self.ctx, 1024, 1024,
                                    ['assets/skybox/night/right.png',
-                                   'assets/skybox/night/left.png',
-                                   'assets/skybox/night/top.png',
-                                   'assets/skybox/night/bottom.png',
-                                   'assets/skybox/night/back.png',
-                                   'assets/skybox/night/front.png'])
+                                    'assets/skybox/night/left.png',
+                                    'assets/skybox/night/top.png',
+                                    'assets/skybox/night/bottom.png',
+                                    'assets/skybox/night/back.png',
+                                    'assets/skybox/night/front.png'])
         self.skybox = 'night'
+
+        print('Created Skyboxes')
 
     def add_models(self, models):
         """Adds models to the scene."""
 
         self.models = models
 
+        # Rotates all models once instead of repeatedly in the shader.
         for model in models:
             model.rotate()
+
+        print('Added Models')
 
     def add_lighting(self):
         """Adds lighting in the same position as light models."""
@@ -82,6 +91,8 @@ class Scene:
                     self.lights.append(GreenLight(model.position))
                 elif model.light_type == 'redLight':
                     self.lights.append(RedLight(model.position))
+
+        print('Added Lighting')
 
     def draw(self):
         """Draws the scene."""

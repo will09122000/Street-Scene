@@ -10,12 +10,12 @@ uniform vec3 view_position;
 uniform sampler2D s_texture;
 
 uniform int num_lights;
-uniform vec3 light_position[56];
-uniform vec3 color[56];
-uniform float ambient[56];
-uniform float diffuse[56];
-uniform float specular[56];
-uniform vec3 attenuation[56];
+uniform vec3 light_position[64];
+uniform vec3 color[64];
+uniform float ambient[64];
+uniform float diffuse[64];
+uniform float specular[64];
+uniform vec3 attenuation[64];
 
 // Out attributes.
 out vec4 out_color;

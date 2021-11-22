@@ -23,7 +23,7 @@ def load_cars(ctx):
                          position         = (map_edge, 0, -1.1),
                          rotation         = 0,
                          scale            = 0.6,
-                         translation      = (0.08, 0.0, 0.0),
+                         translation      = (0.15, 0.0, 0.0),
                          translate        = True))
 
     cars.append(load_obj(ctx              = ctx,
@@ -32,7 +32,7 @@ def load_cars(ctx):
                          position         = (map_edge/4, 0, -1.1),
                          rotation         = 0,
                          scale            = 0.6,
-                         translation      = (0.08, 0.0, 0.0),
+                         translation      = (0.15, 0.0, 0.0),
                          translate        = True))
 
     cars.append(load_obj(ctx              = ctx,
@@ -41,7 +41,7 @@ def load_cars(ctx):
                          position         = (map_edge, 0, 1.1),
                          rotation         = radians(180),
                          scale            = 0.6,
-                         translation      = (0.08, 0.0, 0.0),
+                         translation      = (0.16, 0.0, 0.0),
                          translate        = True))
 
     cars.append(load_obj(ctx              = ctx,
@@ -50,7 +50,7 @@ def load_cars(ctx):
                          position         = (map_edge/4, 0, 1.1),
                          rotation         = radians(180),
                          scale            = 0.6,
-                         translation      = (0.08, 0.0, 0.0),
+                         translation      = (0.16, 0.0, 0.0),
                          translate        = True))
 
     # Stationary cars  

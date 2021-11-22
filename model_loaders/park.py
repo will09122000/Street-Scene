@@ -18,7 +18,7 @@ def load_park(ctx):
     # Merry-go-round
     park_objects.append(load_obj(ctx = ctx,
                                  obj_file = read_obj('assets/models/mgr.obj'),
-                                 texture_filepath = 'assets/textures/mgr.png',
+                                 texture_filepath = 'assets/textures/metal.png',
                                  position = (10, 0, -10),
                                  rotation = radians(1),
                                  rotate = True))
@@ -27,7 +27,7 @@ def load_park(ctx):
     for i in range(-13, -15, -1):
         park_objects.append(load_obj(ctx              = ctx,
                                      obj_file         = read_obj('assets/models/seesaw.obj'),
-                                     texture_filepath = 'assets/textures/mgr.png',
+                                     texture_filepath = 'assets/textures/blue.png',
                                      position         = (10, 0, i),
                                      scale            = 0.1,
                                      rotation         = 0))
