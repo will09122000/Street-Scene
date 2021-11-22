@@ -8,9 +8,10 @@ def load_football_pitch(ctx):
 
     football_pitch_items = []
 
+    # Read the football pitch object files.
     goal_obj = read_obj('assets/models/goal.obj')
     floodLight_obj = read_obj('assets/models/floodLight.obj')
-    floodLightLight_obj = read_obj('assets/models/floodLightLight2.obj')
+    floodLightLight_obj = read_obj('assets/models/floodLightLight.obj')
 
     # Football goals
     football_pitch_items.append(load_obj(ctx              = ctx,

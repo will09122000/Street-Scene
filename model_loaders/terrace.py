@@ -8,11 +8,13 @@ def load_terraces(ctx):
 
     terraces = []
 
+    # Read the housing object files.
     terrace_obj = read_obj('assets/models/terrace.obj')
     terrace_fence_obj = read_obj('assets/models/terrace_fence.obj')
     chimney_obj = read_obj('assets/models/chimney.obj')
     window_obj = read_obj('assets/models/window.obj')
 
+    # Terraces, terrace fencing, and chimneys
     for i in range(0, -60, -30):
         terraces.append(load_obj(ctx              = ctx,
                                  obj_file         = terrace_obj,
@@ -35,6 +37,7 @@ def load_terraces(ctx):
         shuffle(light_on)
         light_index = 0
 
+        # Terrace windows
         for j in np.arange(7.52, 12.48, 4.96):
             for k in np.arange(0, 10.3, 5.1):
                 terraces.append(load_obj(ctx              = ctx,

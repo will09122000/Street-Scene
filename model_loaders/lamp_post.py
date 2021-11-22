@@ -8,6 +8,7 @@ def load_lamp_posts(ctx):
     x_spacer = 5
     y_spacer = 8
 
+    # Read the lamp post object files.
     lamp_post_obj = read_obj('assets/models/lampPost.obj')
     lamp_post_light_obj = read_obj('assets/models/lampPostLight.obj')
 
