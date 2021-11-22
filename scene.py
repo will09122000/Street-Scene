@@ -133,6 +133,19 @@ class Scene:
 
         pygame.display.flip()
 
+    def display_controls(self):
+        """Displays the user input controls for navigating and exiting the scene."""
+
+        print('\nControls:\n')
+
+        print('Use the mouse to look around.')
+        print("Key 'W': Move forward")
+        print("Key 'A': Move left")
+        print("Key 'S': Move backward")
+        print("Key 'D': Move right")
+        print("Key '1': Toggle skybox")
+        print("Key 'esc' or 'q': Exit")
+
     def run(self):
         """Draws the scene in a loop until exit."""
 

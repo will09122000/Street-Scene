@@ -22,11 +22,12 @@ out vec4 out_color;
 
 void main() {
 
-    // Ambient
+    // As it's a night scene there is no ambient lighting.
     vec3 total_lighting = ambient[0] * color[0];
 
     for (int i = 0; i < num_lights; i++)
     {
+
         // Attenuation
         float distance = length(light_position[i] - frag_position);
         float attenuation = 1.0 / (attenuation[i].x +

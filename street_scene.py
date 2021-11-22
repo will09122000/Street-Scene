@@ -3,17 +3,20 @@ from model_loaders.model_loader import load_models
 
 if __name__ == '__main__':
 
-    # initialises the scene object
+    # Initialises the scene object.
     scene = Scene(width=1280, height=720)
 
-    # Create day and night skyboxes
+    # Create day and night skyboxes.
     scene.add_skyboxes()
 
-    # load here the 3d meshes
+    # load all 3D models in the scene.
     scene.add_models(load_models(scene.ctx))
 
-    # Load the scene's lighting.
+    # Load the scene's local lighting.
     scene.add_lighting()
 
-    # starts drawing the scene
+    # Prints the user's input controls for navigating and exiting the scene.
+    scene.display_controls()
+
+    # Start drawing the scene.
     scene.run()

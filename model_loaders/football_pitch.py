@@ -10,7 +10,7 @@ def load_football_pitch(ctx):
 
     goal_obj = read_obj('assets/models/goal.obj')
     floodLight_obj = read_obj('assets/models/floodLight.obj')
-    floodLightLight_obj = read_obj('assets/models/floodLightLight.obj')
+    floodLightLight_obj = read_obj('assets/models/floodLightLight2.obj')
 
     # Football goals
     football_pitch_items.append(load_obj(ctx              = ctx,
@@ -39,14 +39,14 @@ def load_football_pitch(ctx):
             football_pitch_items.append(load_obj(ctx              = ctx,
                                                  obj_file         = floodLightLight_obj,
                                                  texture_filepath = 'assets/textures/white.png',
-                                                 position         = (j, -0.01, i-0.445),
+                                                 position         = (j, 3.95, i-0.445),
                                                  rotation         = 0,
                                                  light_type       = 'floodLight'))
 
             football_pitch_items.append(load_obj(ctx              = ctx,
                                                  obj_file         = floodLightLight_obj,
                                                  texture_filepath = 'assets/textures/white.png',
-                                                 position         = (j, -0.01, i+0.45),
+                                                 position         = (j, 3.95, i+0.45),
                                                  rotation         = 0,
                                                  light_type       = 'floodLight'))
 

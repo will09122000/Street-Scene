@@ -76,8 +76,8 @@ class FloodLight(Light):
                  position,
                  color       = (1.0, 1.0, 1.0),
                  ambient     = 0.0,
-                 diffuse     = 0.5,
-                 specular    = 0.2,
+                 diffuse     = 0.7,
+                 specular    = 0.0,
                  attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(position,
@@ -89,7 +89,7 @@ class FloodLight(Light):
 
 class GreenLight(Light):
     """
-
+    A green light for the traffic lights.
     """
     def __init__(self,
                  position,
@@ -108,7 +108,7 @@ class GreenLight(Light):
 
 class RedLight(Light):
     """
-
+    A red light for the traffic lights.
     """
     def __init__(self,
                  position,
