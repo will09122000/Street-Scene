@@ -80,7 +80,7 @@ def read_obj(filepath):
                             tex_indices.append(int(indice[1])-1)
                             norm_indices.append(int(indice[2])-1)
 
-                    # Converts quads into pairs of triangles.
+                    # Converts quads into pairs of triangles (from workshop).
                     elif len(face) == 4:
                         face1 = [face[0], face[1], face[2]]
                         for indice in face1:

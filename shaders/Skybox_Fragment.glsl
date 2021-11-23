@@ -7,8 +7,8 @@ in vec3 v_texture;
 uniform samplerCube cube_map;
 
 // Out attributes.
-out vec4 out_color;
+out vec4 out_colour;
 
 void main() {
-    out_color = texture(cube_map, v_texture);
+    out_colour = texture(cube_map, v_texture);
 }

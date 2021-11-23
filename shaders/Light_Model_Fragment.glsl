@@ -1,14 +1,14 @@
 #version 330
 
-// In attributes.
+// In attributes
 in vec2 v_texture;
 
-// Uniforms.
+// Uniforms
 uniform sampler2D s_texture;
 
-// Out attributes.
-out vec4 out_color;
+// Out attributes
+out vec4 out_colour;
 
 void main() {
-    out_color = texture(s_texture, v_texture);
+    out_colour = texture(s_texture, v_texture);
 }

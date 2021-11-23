@@ -19,17 +19,18 @@ class Scene:
     """
     def __init__(self, width, height):
 
+        # Initialise pygame.
         pygame.init()
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
         pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 8)
 
+        # Set pygame window window caption.
         self.window = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
         pygame.display.set_caption('Street Scene')
 
         # Disables the cursor.
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(False)
-
 
         # Creates ModernGL context.
         self.ctx = moderngl.create_context()
@@ -40,6 +41,7 @@ class Scene:
         self.camera = Camera(width / height)
         self.camera.noclip = True
 
+        # All models and lights will be added to these lists.
         self.models = []
         self.lights = []
 
@@ -72,7 +74,7 @@ class Scene:
 
         self.models = models
 
-        # Rotates all models once instead of repeatedly in the shader.
+        # Rotates all static models once instead of repeatedly in the shader or draw method below.
         for model in models:
             model.rotate()
 
@@ -129,6 +131,7 @@ class Scene:
                 elif model.rotation[1] > 0:
                     model.rotate()
 
+            # Render models.
             model.render()
 
         pygame.display.flip()

@@ -75,7 +75,7 @@ class Base_Model:
         self.shader['view_position'].value  = tuple(camera.position.tolist())
         self.shader['num_lights'].value     = len(lights)
         self.shader['light_position'].value = [tuple(light.position.tolist()) for light in lights]
-        self.shader['color'].value          = [light.color for light in lights]
+        self.shader['colour'].value          = [light.colour for light in lights]
         self.shader['ambient'].value        = [light.ambient for light in lights]
         self.shader['diffuse'].value        = [light.diffuse for light in lights]
         self.shader['specular'].value       = [light.specular for light in lights]

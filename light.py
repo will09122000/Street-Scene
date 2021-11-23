@@ -6,24 +6,24 @@ class Light:
 
     Attributes
     ----------
-    position :           Vector3 | The position of the light as a 3D vector.
-    color :                tuple | The color of light emitted in an RGB format.
-    ambient                float | Strength of ambient lighting from 0 to 1.
-    diffuse                float | Strength of diffuse lighting from 0 to 1.
-    specular               float | Strength of specular lighting from 0 to 1.
-    attenuation            tuple | The constant, linear and quadratic attenuation.
+    position:  Vector3 | The position of the light as a 3D vector.
+    colour:      tuple | The colour of light emitted in an RGB format.
+    ambient:     float | Strength of ambient lighting from 0 to 1.
+    diffuse:     float | Strength of diffuse lighting from 0 to 1.
+    specular:    float | Strength of specular lighting from 0 to 1.
+    attenuation: tuple | The constant, linear and quadratic attenuation.
     """
 
     def __init__(self,
                  position,
-                 color,
+                 colour,
                  ambient,
                  diffuse,
                  specular,
                  attenuation):
 
         self.position = Vector3(position)
-        self.color = color
+        self.colour = colour
         self.ambient = ambient
         self.diffuse = diffuse
         self.specular = specular
@@ -35,7 +35,7 @@ class LampPostLight(Light):
     """
     def __init__(self,
                  position,
-                 color       = (1.0, 0.73, 0.0),
+                 colour      = (1.0, 0.73, 0.0),
                  ambient     = 0.0,
                  diffuse     = 0.5,
                  specular    = 0.2,
@@ -43,7 +43,7 @@ class LampPostLight(Light):
 
         super().__init__(
             position,
-            color,
+            colour,
             ambient,
             diffuse,
             specular,
@@ -55,14 +55,14 @@ class WindowLight(Light):
     """
     def __init__(self,
                  position,
-                 color       = (0.2, 0.2, 0.2),
+                 colour      = (0.2, 0.2, 0.2),
                  ambient     = 0.0,
                  diffuse     = 0.5,
                  specular    = 0.2,
                  attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(position,
-                         color,
+                         colour,
                          ambient,
                          diffuse,
                          specular,
@@ -74,14 +74,14 @@ class FloodLight(Light):
     """
     def __init__(self,
                  position,
-                 color       = (1.0, 1.0, 1.0),
+                 colour      = (1.0, 1.0, 1.0),
                  ambient     = 0.0,
                  diffuse     = 0.7,
                  specular    = 0.0,
                  attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(position,
-                         color,
+                         colour,
                          ambient,
                          diffuse,
                          specular,
@@ -93,14 +93,14 @@ class GreenLight(Light):
     """
     def __init__(self,
                  position,
-                 color       = (0.2, 0.65, 0.2),
+                 colour      = (0.2, 0.65, 0.2),
                  ambient     = 0.0,
                  diffuse     = 0.5,
                  specular    = 0.2,
                  attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(position,
-                         color,
+                         colour,
                          ambient,
                          diffuse,
                          specular,
@@ -112,14 +112,14 @@ class RedLight(Light):
     """
     def __init__(self,
                  position,
-                 color       = (0.73, 0.12, 0.06),
+                 colour      = (0.73, 0.12, 0.06),
                  ambient     = 0.0,
                  diffuse     = 0.5,
                  specular    = 0.2,
                  attenuation = (0.5, 0.1, 0.05)):
 
         super().__init__(position,
-                         color,
+                         colour,
                          ambient,
                          diffuse,
                          specular,

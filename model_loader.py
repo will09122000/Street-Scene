@@ -14,6 +14,7 @@ def load_models(ctx):
     model_list = [load_floor, load_cars, load_trees, load_lamp_posts, load_terraces, load_statue,
                   load_football_pitch, load_traffic_lights, load_park]
 
+    # Iterate through each model loader in the above list and add all model objects to a list.
     for loader in model_list:
         model = loader(ctx)
         models.extend(model)
