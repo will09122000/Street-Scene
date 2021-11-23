@@ -4,7 +4,7 @@ from model_loader import load_models
 if __name__ == '__main__':
 
     # Initialises the scene object.
-    scene = Scene(width=1280, height=720)
+    scene = Scene(width=1920, height=1080)
 
     # Create day and night skyboxes.
     scene.add_skyboxes()
