@@ -7,6 +7,7 @@ def load_traffic_lights(ctx):
     """Loads green and red traffic lights on each corner of the pavement."""
     traffic_lights = []
 
+    # Read the traffic light object files.
     traffic_light_obj = read_obj('assets/models/trafficLight.obj')
     traffic_light_light_obj = read_obj('assets/models/trafficLightLight.obj')
 

@@ -36,6 +36,8 @@ class Base_Model:
                  scale = 1.0):
 
         self.ctx = ctx
+
+        # Compile the base model shader.
         self.shader = ctx.program(vertex_shader = open('shaders/Base_Model_Vertex.glsl').read(),
                                   fragment_shader = open('shaders/Base_Model_Fragment.glsl').read())
 
@@ -91,10 +93,12 @@ class Base_Model:
 
     def render(self):
         """Render the model."""
+
         self.texture.use(location=0)
         self.vao.render()
 
     def rotate(self):
-        """Rotate the model."""
+        """Rotate the model about the y-axis."""
+
         rotation_matrix = pyrr.matrix44.create_from_y_rotation(self.rotation[1])
         self.position_matrix = pyrr.matrix44.multiply(rotation_matrix, self.position_matrix)

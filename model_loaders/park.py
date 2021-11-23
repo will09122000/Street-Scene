@@ -4,7 +4,7 @@ import numpy as np
 from object_reader import read_obj, load_obj
 
 def load_park(ctx):
-    """Loads park objects into one corner of the crossroads."""
+    """Loads park objects into one corner of the map."""
 
     park_objects = []
 
@@ -39,5 +39,5 @@ def load_park(ctx):
                                      texture_filepath = 'assets/textures/bench.png',
                                      position = (13.5, 0, i),
                                      rotation = radians(90)))
- 
+
     return park_objects

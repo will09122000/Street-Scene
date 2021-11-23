@@ -9,14 +9,14 @@ def load_trees(ctx):
 
     tree_obj = read_obj('assets/models/tree.obj')
 
-    repeat = False
-    for _ in range(0, 2):
+    for i in range(0, 2):
         for j in range(-20, 28, y_spacer):
             # Prevent trees being placed too near the cross roads.
             if j < -8 or j > 8:
                 left = True
                 for _ in range(0, 2):
-                    if repeat:
+                    # Decides which road the trees are being placed on.
+                    if i > 0:
                         position = [-x_spacer if left else x_spacer, 0, j]
                     else:
                         position = [j, 0, -x_spacer if left else x_spacer]
@@ -25,8 +25,8 @@ def load_trees(ctx):
                                     obj_file         = tree_obj,
                                     texture_filepath = 'assets/textures/tree.png',
                                     position         = (position))
+
                     trees.append(tree)
                     left = not left
-        repeat = True
 
     return trees

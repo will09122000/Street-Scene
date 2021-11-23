@@ -1,4 +1,4 @@
-import struct
+from struct import pack
 
 from models.model import Base_Model
 
@@ -18,6 +18,7 @@ class Enviro_Map_Model(Base_Model):
                  rotation = 0.0,
                  scale = 1.0):
 
+        # Initialise attributes using Base Model's constructor.
         super().__init__(ctx,
                          position,
                          texture,
@@ -32,8 +33,8 @@ class Enviro_Map_Model(Base_Model):
                                   fragment_shader = open('shaders/Enviro_Map_Model_Fragment.glsl').read())
 
         # Creates model's VAO.
-        position = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
-        normal = self.ctx.buffer(struct.pack(f'{len(self.norm_coords)}f', *self.norm_coords))
+        position = self.ctx.buffer(pack(f'{len(self.model_coords)}f', *self.model_coords))
+        normal = self.ctx.buffer(pack(f'{len(self.norm_coords)}f', *self.norm_coords))
 
         self.vao = self.ctx.vertex_array(self.shader, [(position, '3f', 'position'),
                                                        (normal, '3f', 'normal')])

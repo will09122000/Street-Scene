@@ -18,23 +18,21 @@ def load_lamp_posts(ctx):
             if j != 0:
                 left = True
                 for k in range(-1, 2, 2):
+                    # Decide which road the lampost is being placed.
                     if i > 0:
                         position = [-x_spacer if left else x_spacer, 0, j]
                         angle1, angle2 = radians(90), radians(-90)
+                        light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2])
                     else:
                         position = [j, 0, -x_spacer if left else x_spacer]
                         angle1, angle2 = radians(180), 0
+                        light_position = (position[0], position[1]+2.16, position[2]+(-0.29*k))
 
                     lamp_post = load_obj(ctx              = ctx,
                                          obj_file         = lamp_post_obj,
                                          texture_filepath = 'assets/textures/lampPost.png',
                                          position         = position,
                                          rotation         = angle1 if left else angle2)
-
-                    if i > 0:
-                        light_position = (position[0]+(-0.29*k), position[1]+2.16, position[2])
-                    else:
-                        light_position = (position[0], position[1]+2.16, position[2]+(-0.29*k))
 
                     lamp_post_light = load_obj(ctx              = ctx,
                                                obj_file         = lamp_post_light_obj,

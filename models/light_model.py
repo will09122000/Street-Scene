@@ -1,4 +1,4 @@
-import struct
+from struct import pack
 
 from models.model import Base_Model
 
@@ -7,7 +7,9 @@ class Light_Model(Base_Model):
     A class to represent a model that is not affected by any light source. Used in conjunction
     with a light object to give the appearance of a light.
 
-    No additional attributes from Base_Model.
+    Additional attributes from Base_Model
+    -------------------------------------
+    light_type: string | The type of light that needs to be rendered, e.g. lamp post.
     """
     def __init__(self,
                  ctx,
@@ -20,6 +22,7 @@ class Light_Model(Base_Model):
                  rotation = 0.0,
                  scale = 1.0):
 
+        # Initialise attributes using Base Model's constructor.
         super().__init__(ctx,
                          position,
                          texture,
@@ -30,13 +33,14 @@ class Light_Model(Base_Model):
                          scale)
 
         self.light_type = light_type
+
+        # Compile the light model shader.
         self.shader = ctx.program(vertex_shader = open('shaders/Light_Model_Vertex.glsl').read(),
                                   fragment_shader = open('shaders/Light_Model_Fragment.glsl').read())
-        self.create_vao()
 
-    def create_vao(self):
-        position = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
-        texture_coords  = self.ctx.buffer(struct.pack(f'{len(self.texture_coords)}f', *self.texture_coords))
+        # Creates model's VAO.
+        position = self.ctx.buffer(pack(f'{len(self.model_coords)}f', *self.model_coords))
+        texture_coords  = self.ctx.buffer(pack(f'{len(self.texture_coords)}f', *self.texture_coords))
 
         self.vao = self.ctx.vertex_array(self.shader, [(position, '3f', 'position'),
                                                        (texture_coords,  '2f', 'texture_coord')])

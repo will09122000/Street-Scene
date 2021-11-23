@@ -1,7 +1,7 @@
 import pyrr
-import struct
 import PIL.Image
 import numpy as np
+from struct import pack
 
 from object_reader import read_obj
 
@@ -26,6 +26,7 @@ class Skybox:
 
         obj_file = read_obj('assets/models/cube.obj')
 
+        # Compile the skybox shader.
         self.shader = ctx.program(vertex_shader = open('shaders/Skybox_Vertex.glsl').read(),
                                   fragment_shader = open('shaders/Skybox_Fragment.glsl').read())
 
@@ -37,20 +38,21 @@ class Skybox:
 
         self.texture = self.create_skybox(image_list, width, height)
 
-        # Creates VAO
-        position = self.ctx.buffer(struct.pack(f'{len(self.model_coords)}f', *self.model_coords))
+        # Creates model's VAO.
+        position = self.ctx.buffer(pack(f'{len(self.model_coords)}f', *self.model_coords))
         self.vao = self.ctx.vertex_array(self.shader, [(position, '3f', 'position')])
 
-    def create_skybox(self, imageList, width, height):
-        """Creates a texture cube from 6 images."""
-        dataList = []
-        for filename in imageList:
-            image = PIL.Image.open(filename)
+    def create_skybox(self, image_list, width, height):
+        """Creates a texture cube from 6 images with identical dimensions."""
+
+        data = []
+        for file_name in image_list:
+            image = PIL.Image.open(file_name)
             if width != image.size[0] or height != image.size[1]:
                 raise ValueError(f'Images are not of equal size: {image.size[0]}x{image.size[1]}.')
-            dataList.append(list(image.getdata()))
+            data.append(list(image.getdata()))
 
-        image_data = np.array(dataList, np.uint8)
+        image_data = np.array(data, np.uint8)
 
         return self.ctx.texture_cube((width, height), 4, image_data)
 
@@ -67,5 +69,6 @@ class Skybox:
 
     def render(self):
         """Render the skybox."""
+
         self.texture.use()
         self.vao.render()

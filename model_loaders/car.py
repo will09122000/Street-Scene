@@ -53,7 +53,7 @@ def load_cars(ctx):
                          translation      = (0.16, 0.0, 0.0),
                          translate        = True))
 
-    # Stationary cars  
+    # Stationary cars
     cars.append(load_obj(ctx              = ctx,
                          obj_file         = car_types[colour[4]],
                          texture_filepath = f'assets/textures/car{colour[4]}.png',

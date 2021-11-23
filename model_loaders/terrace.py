@@ -14,17 +14,19 @@ def load_terraces(ctx):
     chimney_obj = read_obj('assets/models/chimney.obj')
     window_obj = read_obj('assets/models/window.obj')
 
-    # Terraces, terrace fencing, and chimneys
     for i in range(0, -60, -30):
+
+        # Terrace
         terraces.append(load_obj(ctx              = ctx,
                                  obj_file         = terrace_obj,
                                  texture_filepath = 'assets/textures/terrace.png',
                                  position         = (15+i, 0, 10)))
+        # Garden fencing
         terraces.append(load_obj(ctx              = ctx,
                                  obj_file         = terrace_fence_obj,
                                  texture_filepath = 'assets/textures/terrace_fence.png',
                                  position         = (15+i, 0, 10)))
-
+        # Terrace chimneys
         for j in np.arange(8.5, 23.5, 5):
             terraces.append(load_obj(ctx              = ctx,
                                      obj_file         = chimney_obj,
