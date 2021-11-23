@@ -70,7 +70,7 @@ class WindowLight(Light):
 
 class FloodLight(Light):
     """
-    An orange light to emit from the top of the football pitch floodlight.
+    A bright white light to emit from the top of the football pitch floodlight.
     """
     def __init__(self,
                  position,

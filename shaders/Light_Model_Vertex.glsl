@@ -22,5 +22,5 @@ void main() {
     v_texture = texture_coord;
 
     // Transforms the scaled position, this variable is a standard output of the vertex shader.
-    gl_Position = projection * view * model * vec4(scaled_position, 1.0);;
+    gl_Position = projection * view * model * vec4(scaled_position, 1.0);
 }
